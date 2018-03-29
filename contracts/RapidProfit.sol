@@ -73,12 +73,12 @@ contract Ownable {
 
     /**
      * @dev Allows the current owner to transfer control of the contract to a newOwner.
-     * @param newOwner The address to transfer ownership to.
+     * @param _newOwner The address to transfer ownership to.
      */
-    function changeOwnerTwo(address newOwner) onlyOwner public {
-        require(newOwner != address(0));
-        OwnerChanged(owner, newOwner);
-        ownerTwo = newOwner;
+    function changeOwner(address _newOwner) onlyOwner public {
+        require(_newOwner != address(0));
+        OwnerChanged(owner, _newOwner);
+        owner = _newOwner;
     }
 
 }
@@ -89,6 +89,19 @@ contract RapidProfit is Ownable {
 
     enum State {Active, Closed}
     State public state;
+
+    struct transferInStruct{
+        uint256 amount;
+        uint8 percent;
+        uint64 time;
+        bool isRipe;
+    }
+
+    mapping(address => uint256) balances;
+    mapping(address => transferInStruct[]) transferIns;
+    uint64 stakeDay = 1 days;
+    uint64 stakeWeek = 1 weeks;
+    uint64 stakeMonth = 31 days;
 
     event TokenPurchase(address indexed beneficiary, uint256 value, uint256 amount);
 
@@ -104,15 +117,70 @@ contract RapidProfit is Ownable {
 
     // fallback function can be used to buy tokens
     function() payable public {
-        buyTokens(msg.sender);
+        deposit(msg.sender, 1);
     }
 
-    // low level token purchase function
-    function buyTokens(address _investor) public inState(State.Active) payable returns (uint256){
+    function deposit(address _investor, uint256 _amount, uint8 _percent) public inState(State.Active) payable returns (bool){
         require(_investor != address(0));
-        uint256 weiAmount = msg.value;
-        uint256 tokens = 0;
-        return tokens;
+        require(msg.sender != address(0));
+        balances[_investor] = balances[_investor].add(_amount);
+        transferIns[_investor].push(transferInStruct(uint256(_amount), uint8(_percent) ,uint64(now), false));
+        return true;
+    }
+
+    //After test make private
+    function validWithdraw(address _address, uint64 _now) public inState(State.Active) payable returns (uint256){
+        require(_address != address(0));
+        uint256 amount = 0;
+
+        if(balances[_address] <= 0 || transferIns[_address].length <= 0){
+            return amount;
+        }
+
+        for (uint i = 0; i < transferIns[msg.sender].length; i++){
+            uint8 stake = uint8(transferIns[_address][i].percent);
+            uint64 nCoinSeconds = _now.sub(uint(transferIns[_address][i].time));
+            uint64 currentStakeAge = nCoinSeconds.div(1 days);
+
+            if (stake == 1){
+                if( _now < uint64(transferIns[_address][i].time).add(stakeDay) ) continue;
+            }
+            if (stake == 7){
+                if( _now < uint64(transferIns[_address][i].time).add(stakeWeek) ) continue;
+            }
+            if (stake == 31){
+                if( _now < uint64(transferIns[_address][i].time).add(stakeMonth) ) continue;
+            }
+            if(currentStakeAge > stake){
+                amount = amount.add(uint256(transferIns[_address][i].amount));
+                transferIns[_address][i].isRipe = true;
+                //delete transferIns[_address][i];
+            }
+        }
+        return amount;
+    }
+
+    function withdraw() public inState(State.Active) payable returns (bool){
+        address _address = msg.sender;
+        require(_address != address(0));
+        uint64 _currentTime = now;
+        uint256 _amount = validWithdraw(_address, _currentTime);
+        require(_amount > 0);
+        require(this.balance >= _amount);
+        require(balances[_address] >= _amount);
+        _address.transfer(_amount);
+        balances[_address] = balances[_address].sub(_amount);
+        for (uint i = 0; i < transferIns[msg.sender].length; i++){
+            if(transferIns[_address][i].isRipe == true){
+                delete transferIns[_address][i];
+            }
+        }
+    }
+
+
+
+    function balanceOf(address _owner) public returns (uint256 balance) {
+        return balances[_owner];
     }
 
     function removeContract() public onlyOwner {
