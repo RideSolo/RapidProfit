@@ -15,6 +15,7 @@ contract('RapidProfit', (accounts) => {
         assert.notEqual(undefined, contract.address);
     });
 
+
 });
 
 

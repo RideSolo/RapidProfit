@@ -90,20 +90,37 @@ contract RapidProfit is Ownable {
     enum State {Active, Closed}
     State public state;
 
+    enum TypeStake {DAY, WEEK, MONTH}
+    TypeStake public typeStake;
+
+    enum StatusStake {ACTIVE, COMPLETED, CANCELLED}
+
     struct transferInStruct{
         uint256 amount;
-        uint8 percent;
+        uint8 stakeType;
         uint64 time;
+        uint256 numberStake;
         bool isRipe;
     }
+
+    struct stakeStruct{
+        address owner;
+        uint256 amount;
+        uint8 stakeType;
+        uint64 time;
+        uint8 status;
+    }
+
+    stakeStruct[] arrayStakes;
+
 
     mapping(address => uint256) balances;
     mapping(address => transferInStruct[]) transferIns;
     uint64 stakeDay = 1 days;
     uint64 stakeWeek = 1 weeks;
-    uint64 stakeMonth = 31 days;
+    uint64 stakeMonth = 730 hours;
 
-    event TokenPurchase(address indexed beneficiary, uint256 value, uint256 amount);
+    event Withdraw(address indexed receiver, uint256 amount);
 
     function RapidProfit(address _owner) public {
         require(_owner != address(0));
@@ -117,14 +134,24 @@ contract RapidProfit is Ownable {
 
     // fallback function can be used to buy tokens
     function() payable public {
-        deposit(msg.sender, 1);
+        deposit(msg.sender, msg.value, TypeStake.DAY, now);
     }
 
-    function deposit(address _investor, uint256 _amount, uint8 _percent) public inState(State.Active) payable returns (bool){
+    function deposit(address _investor, uint256 _amount, uint8 _stakeType, uint64 _time) public inState(State.Active) payable returns (bool){
         require(_investor != address(0));
         require(msg.sender != address(0));
         balances[_investor] = balances[_investor].add(_amount);
-        transferIns[_investor].push(transferInStruct(uint256(_amount), uint8(_percent) ,uint64(now), false));
+        uint256 numberStake = arrayStakes.length;
+
+        arrayStakes.push(stakeStruct({
+            owner: _investor,
+            amount: _amount,
+            stakeType: _stakeType,
+            time: _time,
+            status: StatusStake.ACTIVE;
+            }));
+        transferIns[_investor].push(transferInStruct(uint256(_amount), uint8(_stakeType) ,uint64(now), numberStake, false));
+
         return true;
     }
 
@@ -138,24 +165,22 @@ contract RapidProfit is Ownable {
         }
 
         for (uint i = 0; i < transferIns[msg.sender].length; i++){
-            uint8 stake = uint8(transferIns[_address][i].percent);
+            uint8 stake = uint8(transferIns[_address][i].stakeType);
             uint64 nCoinSeconds = _now.sub(uint(transferIns[_address][i].time));
             uint64 currentStakeAge = nCoinSeconds.div(1 days);
 
-            if (stake == 1){
+            if (stake == TypeStake.DAY){
                 if( _now < uint64(transferIns[_address][i].time).add(stakeDay) ) continue;
             }
-            if (stake == 7){
+            if (stake == TypeStake.WEEK){
                 if( _now < uint64(transferIns[_address][i].time).add(stakeWeek) ) continue;
             }
-            if (stake == 31){
+            if (stake == TypeStake.MONTH){
                 if( _now < uint64(transferIns[_address][i].time).add(stakeMonth) ) continue;
             }
-            if(currentStakeAge > stake){
-                amount = amount.add(uint256(transferIns[_address][i].amount));
-                transferIns[_address][i].isRipe = true;
-                //delete transferIns[_address][i];
-            }
+            amount = amount.add(uint256(transferIns[_address][i].amount));
+            transferIns[_address][i].isRipe = true;
+            arrayStakes[transferIns[_address][i].numberStake].status = StatusStake.COMPLETED;
         }
         return amount;
     }
@@ -172,15 +197,41 @@ contract RapidProfit is Ownable {
         balances[_address] = balances[_address].sub(_amount);
         for (uint i = 0; i < transferIns[msg.sender].length; i++){
             if(transferIns[_address][i].isRipe == true){
+                delete arrayStakes[transferIns[_address][i].numberStake];
+                arrayStakes.length--;
                 delete transferIns[_address][i];
             }
         }
+        Withdraw(_address, _amount);
     }
-
-
 
     function balanceOf(address _owner) public returns (uint256 balance) {
         return balances[_owner];
+    }
+
+    function withdrawOwner(uint256 _amount) public onlyOwner returns (bool) {
+        require(this.balance >= _amount);
+        owner.transfer(_amount);
+        Withdraw(owner, _amount);
+    }
+
+    function getStakeByIndex(uint256 _index) public view returns (
+        address _owner;
+        uint256 _amount;
+        uint8 _stakeType;
+        uint64 _time;
+        uint8 _status;
+    ) {
+        require(_index < arrayStakes.length);
+        _owner = arrayStakes[_index].owner;
+        _amount = arrayStakes[_index].amount;
+        _stakeType = arrayStakes[_index].stakeType;
+        _time = arrayStakes[_index].time;
+        _status = arrayStakes[_index].status;
+    }
+
+    function getCountStakes() public view returns (uint256 _count) {
+        _count = arrayStakes.length;
     }
 
     function removeContract() public onlyOwner {
