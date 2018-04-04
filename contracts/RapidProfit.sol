@@ -115,7 +115,9 @@ contract RapidProfit is Ownable {
     uint256[] public rates  = [101, 109, 136];
 
 
-    mapping(address => uint256) balances;
+    mapping(address => uint256) balancesETH;
+    mapping(address => uint256) balancesToken;
+
     mapping(address => transferInStruct[]) transferIns;
     uint256 stakeDay = 1 days;
     uint256 stakeWeek = 1 weeks;
@@ -138,10 +140,28 @@ contract RapidProfit is Ownable {
         //deposit(msg.sender, msg.value, TypeStake.DAY, now);
     }
 
-    function deposit(address _investor, uint256 _amount, TypeStake _stakeType, uint256 _time) public inState(State.Active) payable returns (bool){
+    function depositETH(address _investor, uint256 _amount, TypeStake _stakeType, uint256 _time) public inState(State.Active) payable returns (bool){
         require(_investor != address(0));
         require(msg.sender != address(0));
-        balances[_investor] = balances[_investor].add(_amount);
+        balancesETH[_investor] = balancesETH[_investor].add(_amount);
+        uint256 numberStake = arrayStakes.length;
+
+        arrayStakes.push(stakeStruct({
+            owner: _investor,
+            amount: _amount,
+            stakeType: _stakeType,
+            time: _time,
+            status: StatusStake.ACTIVE
+            }));
+        transferIns[_investor].push(transferInStruct(uint256(_amount), _stakeType ,uint256(now), numberStake, false));
+
+        return true;
+    }
+
+    function depositToken(address _investor, uint256 _amount, TypeStake _stakeType, uint256 _time) public inState(State.Active) payable returns (bool){
+        require(_investor != address(0));
+        require(msg.sender != address(0));
+        balancesToken[_investor] = balancesToken[_investor].add(_amount);
         uint256 numberStake = arrayStakes.length;
 
         arrayStakes.push(stakeStruct({
@@ -162,18 +182,18 @@ contract RapidProfit is Ownable {
      * @param _now The current time.
      * @return the amount of wei that can be withdrawn from contract
      */
-    function validWithdraw(address _address, uint256 _now) public inState(State.Active) payable returns (uint256){
+    function validWithdrawETH(address _address, uint256 _now) public inState(State.Active) payable returns (uint256){
         require(_address != address(0));
         uint256 amount = 0;
 
-        if(balances[_address] <= 0 || transferIns[_address].length <= 0){
+        if(balancesETH[_address] <= 0 || transferIns[_address].length <= 0){
             return amount;
         }
 
         for (uint i = 0; i < transferIns[msg.sender].length; i++){
             TypeStake stake = transferIns[_address][i].stakeType;
-            uint256 nCoinSeconds = _now.sub(uint(transferIns[_address][i].time));
-            uint256 currentStakeAge = nCoinSeconds.div(1 days);
+            //uint256 nCoinSeconds = _now.sub(uint(transferIns[_address][i].time));
+            //uint256 currentStakeAge = nCoinSeconds.div(1 days);
             uint256 currentStake = 0;
             if(arrayStakes[transferIns[_address][i].numberStake].status == StatusStake.CANCEL){
                 amount = amount.add(uint256(transferIns[_address][i].amount));
@@ -193,23 +213,24 @@ contract RapidProfit is Ownable {
                 currentStake = 2;
                 if( _now < uint256(transferIns[_address][i].time).add(stakeMonth) ) continue;
             }
-            amount = amount.add(transferIns[_address][i].amount).mul(rates(currentStake)).div(100);
+            amount = amount.add(transferIns[_address][i].amount);
+            amount = amount.mul(rates[currentStake]).div(100);
             transferIns[_address][i].isRipe = true;
             arrayStakes[transferIns[_address][i].numberStake].status = StatusStake.COMPLETED;
         }
         return amount;
     }
 
-    function withdraw() public inState(State.Active) returns (bool){
+    function withdrawETH() public inState(State.Active) returns (bool){
         address _address = msg.sender;
         require(_address != address(0));
         uint256 _currentTime = now;
-        uint256 _amount = validWithdraw(_address, _currentTime);
+        uint256 _amount = validWithdrawETH(_address, _currentTime);
         require(_amount > 0);
         require(this.balance >= _amount);
-        require(balances[_address] >= _amount);
+        require(balancesETH[_address] >= _amount);
         _address.transfer(_amount);
-        balances[_address] = balances[_address].sub(_amount);
+        balancesETH[_address] = balancesETH[_address].sub(_amount);
         for (uint i = 0; i < transferIns[msg.sender].length; i++){
             if(transferIns[_address][i].isRipe == true){
                 delete arrayStakes[transferIns[_address][i].numberStake];
@@ -221,8 +242,12 @@ contract RapidProfit is Ownable {
         Withdraw(_address, _amount);
     }
 
-    function balanceOf(address _owner) public returns (uint256 balance) {
-        return balances[_owner];
+    function balanceOfETH(address _owner) public view returns (uint256 balance) {
+        return balancesETH[_owner];
+    }
+
+    function balanceOfToken(address _owner) public view returns (uint256 balance) {
+        return balancesToken[_owner];
     }
 
     function cancel(uint256 _index) public returns (bool _result) {
@@ -249,9 +274,9 @@ contract RapidProfit is Ownable {
     function getStakeByIndex(uint256 _index) public view returns (
         address _owner,
         uint256 _amount,
-        uint8 _stakeType,
+        TypeStake _stakeType,
         uint256 _time,
-        uint8 _status
+        StatusStake _status
     ) {
         require(_index < arrayStakes.length);
         _owner = arrayStakes[_index].owner;
