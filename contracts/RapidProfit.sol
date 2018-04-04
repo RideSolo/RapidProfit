@@ -95,7 +95,15 @@ contract RapidProfit is Ownable {
 
     enum StatusStake {ACTIVE, COMPLETED, CANCEL}
 
-    struct transferInStruct{
+    struct transferInStructETH{
+        uint256 amount;
+        TypeStake stakeType;
+        uint256 time;
+        uint256 numberStake;
+        bool isRipe;
+    }
+
+    struct transferInStructToken{
         uint256 amount;
         TypeStake stakeType;
         uint256 time;
@@ -118,7 +126,9 @@ contract RapidProfit is Ownable {
     mapping(address => uint256) balancesETH;
     mapping(address => uint256) balancesToken;
 
-    mapping(address => transferInStruct[]) transferIns;
+    mapping(address => transferInStructETH[]) transferInsETH;
+    mapping(address => transferInStructToken[]) transferInsToken;
+
     uint256 stakeDay = 1 days;
     uint256 stakeWeek = 1 weeks;
     uint256 stakeMonth = 730 hours;
@@ -153,7 +163,7 @@ contract RapidProfit is Ownable {
             time: _time,
             status: StatusStake.ACTIVE
             }));
-        transferIns[_investor].push(transferInStruct(uint256(_amount), _stakeType ,uint256(now), numberStake, false));
+        transferInsETH[_investor].push(transferInStructETH(uint256(_amount), _stakeType ,uint256(now), numberStake, false));
 
         return true;
     }
@@ -171,7 +181,7 @@ contract RapidProfit is Ownable {
             time: _time,
             status: StatusStake.ACTIVE
             }));
-        transferIns[_investor].push(transferInStruct(uint256(_amount), _stakeType ,uint256(now), numberStake, false));
+        transferInsToken[_investor].push(transferInStructToken(uint256(_amount), _stakeType ,uint256(now), numberStake, false));
 
         return true;
     }
@@ -182,42 +192,43 @@ contract RapidProfit is Ownable {
      * @param _now The current time.
      * @return the amount of wei that can be withdrawn from contract
      */
-    function validWithdrawETH(address _address, uint256 _now) public inState(State.Active) payable returns (uint256){
+    function validWithdrawETH(address _address, uint256 _now) public inState(State.Active) returns (uint256){
         require(_address != address(0));
         uint256 amount = 0;
 
-        if(balancesETH[_address] <= 0 || transferIns[_address].length <= 0){
+        if(balancesETH[_address] <= 0 || transferInsETH[_address].length <= 0){
             return amount;
         }
 
-        for (uint i = 0; i < transferIns[msg.sender].length; i++){
-            TypeStake stake = transferIns[_address][i].stakeType;
+        for (uint i = 0; i < transferInsETH[msg.sender].length; i++){
+            TypeStake stake = transferInsETH[_address][i].stakeType;
             //uint256 nCoinSeconds = _now.sub(uint(transferIns[_address][i].time));
             //uint256 currentStakeAge = nCoinSeconds.div(1 days);
             uint256 currentStake = 0;
-            if(arrayStakes[transferIns[_address][i].numberStake].status == StatusStake.CANCEL){
-                amount = amount.add(uint256(transferIns[_address][i].amount));
-                transferIns[_address][i].isRipe = true;
+            if(arrayStakes[transferInsETH[_address][i].numberStake].status == StatusStake.CANCEL){
+                amount = amount.add(uint256(transferInsETH[_address][i].amount));
+                transferInsETH[_address][i].isRipe = true;
                 continue;
             }
 
             if (stake == TypeStake.DAY){
                 currentStake = 0;
-                if( _now < uint256(transferIns[_address][i].time).add(stakeDay) ) continue;
+                if( _now < uint256(transferInsETH[_address][i].time).add(stakeDay) ) continue;
             }
             if (stake == TypeStake.WEEK){
                 currentStake = 1;
-                if( _now < uint256(transferIns[_address][i].time).add(stakeWeek) ) continue;
+                if( _now < uint256(transferInsETH[_address][i].time).add(stakeWeek) ) continue;
             }
             if (stake == TypeStake.MONTH){
                 currentStake = 2;
-                if( _now < uint256(transferIns[_address][i].time).add(stakeMonth) ) continue;
+                if( _now < uint256(transferInsETH[_address][i].time).add(stakeMonth) ) continue;
             }
-            amount = amount.add(transferIns[_address][i].amount);
+            amount = amount.add(transferInsETH[_address][i].amount);
             amount = amount.mul(rates[currentStake]).div(100);
-            transferIns[_address][i].isRipe = true;
-            arrayStakes[transferIns[_address][i].numberStake].status = StatusStake.COMPLETED;
+            transferInsETH[_address][i].isRipe = true;
+            arrayStakes[transferInsETH[_address][i].numberStake].status = StatusStake.COMPLETED;
         }
+        amount = uint256(transferInsETH[_address][0].stakeType);
         return amount;
     }
 
@@ -231,12 +242,12 @@ contract RapidProfit is Ownable {
         require(balancesETH[_address] >= _amount);
         _address.transfer(_amount);
         balancesETH[_address] = balancesETH[_address].sub(_amount);
-        for (uint i = 0; i < transferIns[msg.sender].length; i++){
-            if(transferIns[_address][i].isRipe == true){
-                delete arrayStakes[transferIns[_address][i].numberStake];
+        for (uint i = 0; i < transferInsETH[msg.sender].length; i++){
+            if(transferInsETH[_address][i].isRipe == true){
+                delete arrayStakes[transferInsETH[_address][i].numberStake];
                 arrayStakes.length--;
-                delete transferIns[_address][i];
-                transferIns[_address].length--;
+                delete transferInsETH[_address][i];
+                transferInsETH[_address].length--;
             }
         }
         Withdraw(_address, _amount);
@@ -271,7 +282,7 @@ contract RapidProfit is Ownable {
 
     }
 
-    function getStakeByIndex(uint256 _index) public view returns (
+    function getETHStakeByIndex(uint256 _index) public view returns (
         address _owner,
         uint256 _amount,
         TypeStake _stakeType,
@@ -284,6 +295,26 @@ contract RapidProfit is Ownable {
         _stakeType = arrayStakes[_index].stakeType;
         _time = arrayStakes[_index].time;
         _status = arrayStakes[_index].status;
+    }
+
+    function getETHTransferInsByAddress(address _address, uint256 _index) public view returns (
+        uint256 _amount,
+        TypeStake _stakeType,
+        uint256 _time,
+        uint256 _numberStake,
+        bool _isRipe
+    ) {
+        require(_index < transferInsETH[_address].length);
+        //len = transferInsETH[_address].length;
+        _amount = transferInsETH[_address][_index].amount;
+        _stakeType = transferInsETH[_address][_index].stakeType;
+        _time = transferInsETH[_address][_index].time;
+        _numberStake = transferInsETH[_address][_index].numberStake;
+        _isRipe = transferInsETH[_address][_index].isRipe;
+    }
+
+    function getCountTransferIns(address _address) public view returns (uint256 _count) {
+        _count = transferInsETH[_address].length;
     }
 
     function getCountStakes() public view returns (uint256 _count) {
