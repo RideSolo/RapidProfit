@@ -97,8 +97,8 @@ contract RapidProfit is Ownable {
 
     struct transferInStruct{
         uint256 amount;
-        uint8 stakeType;
-        uint64 time;
+        TypeStake stakeType;
+        uint256 time;
         uint256 numberStake;
         bool isRipe;
     }
@@ -106,22 +106,22 @@ contract RapidProfit is Ownable {
     struct stakeStruct{
         address owner;
         uint256 amount;
-        uint8 stakeType;
-        uint64 time;
-        uint8 status;
+        TypeStake stakeType;
+        uint256 time;
+        StatusStake status;
     }
 
     stakeStruct[] arrayStakes;
+    uint256[] public rates  = [101, 109, 136];
 
 
     mapping(address => uint256) balances;
     mapping(address => transferInStruct[]) transferIns;
-    uint64 stakeDay = 1 days;
-    uint64 stakeWeek = 1 weeks;
-    uint64 stakeMonth = 730 hours;
+    uint256 stakeDay = 1 days;
+    uint256 stakeWeek = 1 weeks;
+    uint256 stakeMonth = 730 hours;
 
     event Withdraw(address indexed receiver, uint256 amount);
-    event Deposit(address indexed investor, uint256 amount, uint8 stakeType);
 
     function RapidProfit(address _owner) public {
         require(_owner != address(0));
@@ -135,11 +135,10 @@ contract RapidProfit is Ownable {
 
     // fallback function can be used to buy tokens
     function() payable public {
-        deposit(msg.sender, msg.value, TypeStake.DAY, now);
+        //deposit(msg.sender, msg.value, TypeStake.DAY, now);
     }
 
-    //Положить ЭТХ на вклад
-    function deposit(address _investor, uint256 _amount, uint8 _stakeType, uint64 _time) public inState(State.Active) payable returns (bool){
+    function deposit(address _investor, uint256 _amount, TypeStake _stakeType, uint256 _time) public inState(State.Active) payable returns (bool){
         require(_investor != address(0));
         require(msg.sender != address(0));
         balances[_investor] = balances[_investor].add(_amount);
@@ -152,14 +151,18 @@ contract RapidProfit is Ownable {
             time: _time,
             status: StatusStake.ACTIVE
             }));
-        transferIns[_investor].push(transferInStruct(uint256(_amount), uint8(_stakeType) ,uint64(now), numberStake, false));
-        Deposit(_investor, _amount, _stakeType);
+        transferIns[_investor].push(transferInStruct(uint256(_amount), _stakeType ,uint256(now), numberStake, false));
 
         return true;
     }
 
-    //Проверить возможность снятия ЭТХ
-    function validWithdraw(address _address, uint64 _now) public inState(State.Active) payable returns (uint256){
+    /**
+     * @dev Function to mint tokens
+     * @param _address The address of depositor.
+     * @param _now The current time.
+     * @return the amount of wei that can be withdrawn from contract
+     */
+    function validWithdraw(address _address, uint256 _now) public inState(State.Active) payable returns (uint256){
         require(_address != address(0));
         uint256 amount = 0;
 
@@ -168,31 +171,39 @@ contract RapidProfit is Ownable {
         }
 
         for (uint i = 0; i < transferIns[msg.sender].length; i++){
-            uint8 stake = uint8(transferIns[_address][i].stakeType);
-            uint64 nCoinSeconds = _now.sub(uint(transferIns[_address][i].time));
-            uint64 currentStakeAge = nCoinSeconds.div(1 days);
+            TypeStake stake = transferIns[_address][i].stakeType;
+            uint256 nCoinSeconds = _now.sub(uint(transferIns[_address][i].time));
+            uint256 currentStakeAge = nCoinSeconds.div(1 days);
+            uint256 currentStake = 0;
+            if(arrayStakes[transferIns[_address][i].numberStake].status == StatusStake.CANCEL){
+                amount = amount.add(uint256(transferIns[_address][i].amount));
+                transferIns[_address][i].isRipe = true;
+                continue;
+            }
 
             if (stake == TypeStake.DAY){
-                if( _now < uint64(transferIns[_address][i].time).add(stakeDay) ) continue;
+                currentStake = 0;
+                if( _now < uint256(transferIns[_address][i].time).add(stakeDay) ) continue;
             }
             if (stake == TypeStake.WEEK){
-                if( _now < uint64(transferIns[_address][i].time).add(stakeWeek) ) continue;
+                currentStake = 1;
+                if( _now < uint256(transferIns[_address][i].time).add(stakeWeek) ) continue;
             }
             if (stake == TypeStake.MONTH){
-                if( _now < uint64(transferIns[_address][i].time).add(stakeMonth) ) continue;
+                currentStake = 2;
+                if( _now < uint256(transferIns[_address][i].time).add(stakeMonth) ) continue;
             }
-            amount = amount.add(uint256(transferIns[_address][i].amount));
+            amount = amount.add(transferIns[_address][i].amount).mul(rates(currentStake)).div(100);
             transferIns[_address][i].isRipe = true;
             arrayStakes[transferIns[_address][i].numberStake].status = StatusStake.COMPLETED;
         }
         return amount;
     }
 
-    //Снятие наличных с вклада
-    function withdraw() public inState(State.Active) payable returns (bool){
+    function withdraw() public inState(State.Active) returns (bool){
         address _address = msg.sender;
         require(_address != address(0));
-        uint64 _currentTime = now;
+        uint256 _currentTime = now;
         uint256 _amount = validWithdraw(_address, _currentTime);
         require(_amount > 0);
         require(this.balance >= _amount);
@@ -204,36 +215,42 @@ contract RapidProfit is Ownable {
                 delete arrayStakes[transferIns[_address][i].numberStake];
                 arrayStakes.length--;
                 delete transferIns[_address][i];
+                transferIns[_address].length--;
             }
         }
         Withdraw(_address, _amount);
     }
 
-    //Баланс пользователя
     function balanceOf(address _owner) public returns (uint256 balance) {
         return balances[_owner];
     }
 
-    //Снятие ЭТХ для владельца контракта
+    function cancel(uint256 _index) public returns (bool _result) {
+        require(_index >= 0);
+        require(msg.sender != address(0));
+        arrayStakes[_index].status = StatusStake.CANCEL;
+        _result = true;
+    }
+
     function withdrawOwner(uint256 _amount) public onlyOwner returns (bool) {
         require(this.balance >= _amount);
         owner.transfer(_amount);
         Withdraw(owner, _amount);
     }
 
-    //Прекратить вклад
-    function cancelStake(uint256 _index) public returns (bool) {
-        require(_index >= 0);
-        arrayStakes[_index].status = StatusStake.CANCEL;
+    function changeRates(uint8 _numberRate, uint256 _percent) public onlyOwner returns (bool) {
+        require(_percent >= 0);
+        require(0 <= _numberRate && _numberRate < 3);
+        rates[_numberRate] = _percent.add(100);
+        return true;
+
     }
 
-
-    //Возвращает вклад по индексу
     function getStakeByIndex(uint256 _index) public view returns (
         address _owner,
         uint256 _amount,
         uint8 _stakeType,
-        uint64 _time,
+        uint256 _time,
         uint8 _status
     ) {
         require(_index < arrayStakes.length);
@@ -244,7 +261,6 @@ contract RapidProfit is Ownable {
         _status = arrayStakes[_index].status;
     }
 
-    //Возвращает общее количество сделанных вкладов
     function getCountStakes() public view returns (uint256 _count) {
         _count = arrayStakes.length;
     }
@@ -253,11 +269,4 @@ contract RapidProfit is Ownable {
         selfdestruct(owner);
     }
 }
-// Сколько осталось ждать для снятия вклада (uint256 _index)
-
-/**
-Вопрос к заказчику:
-Надо ли хранить историю вкладов?
-
-*/
 
