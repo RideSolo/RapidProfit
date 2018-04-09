@@ -51,8 +51,6 @@ library SafeMath {
 contract Ownable {
     address public owner;
 
-    address public ownerTwo;
-
     event OwnerChanged(address indexed previousOwner, address indexed newOwner);
 
     /**
@@ -67,7 +65,7 @@ contract Ownable {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-        require(msg.sender == owner || msg.sender == ownerTwo);
+        require(msg.sender == owner);
         _;
     }
 

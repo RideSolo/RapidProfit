@@ -1,21 +1,42 @@
-var RapidProfit = artifacts.require("./RapidProfit.sol");
+//var RapidProfit = artifacts.require("./RapidProfit.sol");
+var ContractStakeEth = artifacts.require('./ContractStakeEth.sol');
+var contractRP;
+var contractStakeEth;
 
+contract('ContractStakeEth', (accounts) => {
+    it('should deployed ContractStakeEth', async ()  => {
+        assert.equal(undefined, contractStakeEth);
+        contractStakeEth = await ContractStakeEth.deployed();
+        assert.notEqual(undefined, contractStakeEth);
+    });
+
+    it('get address ContractStakeEth', async ()  => {
+        assert.notEqual(undefined, contractStakeEth.address);
+        //contractOwner = await ContractStakeEth.owner.call();
+        //console.log("contractOwner = " + contractOwner);
+    });
+});
+
+
+/*
 contract('RapidProfit', (accounts) => {
-    var contract;
     var owner = "0x250AF0D95B2C467234A3fEa315869FFE421Ca5c0";
     var TwoETH = 2*10**18;
     var OneETH = 1*10**18;
+*/
 
 
-    it('should deployed contract', async ()  => {
+/*
+    it('should deployed contract RapidProfit', async ()  => {
         assert.equal(undefined, contract);
-        contract = await RapidProfit.deployed();
+        contractRP = await RapidProfit.deployed();
         assert.notEqual(undefined, contract);
     });
 
-    it('get address contract', async ()  => {
+    it('get address contract RapidProfit', async ()  => {
         assert.notEqual(undefined, contract.address);
     });
+*/
 
 /*
     it('verification of ETH deposition', async ()  => {
@@ -214,7 +235,4 @@ it('verification of Token validWithdraw', async ()  => {
     });
 */
 
-});
-
-
-
+//});

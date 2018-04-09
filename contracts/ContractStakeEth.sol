@@ -51,8 +51,6 @@ library SafeMath {
 contract Ownable {
     address public owner;
 
-    address public ownerTwo;
-
     event OwnerChanged(address indexed previousOwner, address indexed newOwner);
 
     /**
@@ -66,7 +64,7 @@ contract Ownable {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-        require(msg.sender == owner || msg.sender == ownerTwo);
+        require(msg.sender == owner);
         _;
     }
 
@@ -206,7 +204,7 @@ contract ContractStakeEth is Ownable {
                 currentStake = 2;
                 if (_now < stakeTime.add(730 hours)) continue;
             }
-            uint256 amountDays = _now.sub(stakeTime).div(1 days);
+            //uint256 amountDays = _now.sub(stakeTime).div(1 days);
             //stakeAmount = calculator(currentStake, stakeAmount, amountDays);
             stakeAmount = stakeAmount.mul(rates[currentStake]).div(100);
 
