@@ -7,7 +7,7 @@ contract('RapidProfit', (accounts) => {
     var OneETH = 1*10**18;
 
 
-it('should deployed contract', async ()  => {
+    it('should deployed contract', async ()  => {
         assert.equal(undefined, contract);
         contract = await RapidProfit.deployed();
         assert.notEqual(undefined, contract);
@@ -17,6 +17,7 @@ it('should deployed contract', async ()  => {
         assert.notEqual(undefined, contract.address);
     });
 
+/*
     it('verification of ETH deposition', async ()  => {
         //deposit(address _investor, uint256 _amount, TypeStake _stakeType, uint256 _time)
         var currentTime = 1522800000; // Wed, 04 Apr 2018 00:00:00 GMT
@@ -111,7 +112,7 @@ it('verification of Token validWithdraw', async ()  => {
 });
 
 
-it('verification of ETH calculate of profit', async ()  => {
+    it('verification of ETH calculate of profit', async ()  => {
         var currentTime = 1522800002; // Wed, 04 Apr 2018 00:00:02 GMT
         balanceAccountForBefore = await contract.balanceOfETH(accounts[4]);
         //await contract.depositETH(accounts[4], OneETH, 0, currentTime, {from:accounts[0]});
@@ -143,6 +144,35 @@ it('verification of ETH calculate of profit', async ()  => {
         assert.equal(Number(OneETH*1.01 + OneETH*1.09 + OneETH*1.36), amount32Days);
     });
 
+    it('verification of Token calculate of profit', async ()  => {
+        var currentTime = 1522800002; // Wed, 04 Apr 2018 00:00:02 GMT
+        balanceAccountForBefore = await contract.balanceOfToken(accounts[4]);
+        await contract.depositToken(accounts[4], OneETH, 0, currentTime, {from:accounts[0]});
+        await contract.depositToken(accounts[4], OneETH, 1, currentTime, {from:accounts[0]});
+        await contract.depositToken(accounts[4], OneETH, 2, currentTime, {from:accounts[0]});
+
+
+        balanceAccountForAfter = await contract.balanceOfToken(accounts[4]);
+
+        var newTime = 1522800022; //Fri, 04 Apr 2018 00:00:22 GMT
+        var amount0Days = await contract.validWithdrawToken.call(accounts[4], newTime, {from:accounts[4]});
+
+        var newTime = 1522972800; //Fri, 06 Apr 2018 00:00:00 GMT
+        var amount2Days = await contract.validWithdrawToken.call(accounts[4], newTime, {from:accounts[4]});
+
+        var newTime = 1523491200; //Fri, 12 Apr 2018 00:00:00 GMT
+        var amount8Days = await contract.validWithdrawToken.call(accounts[4], newTime, {from:accounts[4]});
+        //console.log("amount8Days = " + amount8Days)
+
+        var newTime = 1525651200; //Fri, 07 May 2018 00:00:00 GMT
+        var amount32Days = await contract.validWithdrawToken.call(accounts[4], newTime, {from:accounts[4]});
+
+        assert.equal(0, amount0Days);
+        assert.equal(OneETH*1.01, amount2Days);
+        assert.equal(Number(OneETH*1.01 + OneETH*1.09), amount8Days);
+        assert.equal(Number(OneETH*1.01 + OneETH*1.09 + OneETH*1.36), amount32Days);
+    });
+
     it('verification of ETH withdraw', async ()  => {
         var balanceEthContract = await contract.getBalanceEthContract.call();
         assert.equal(OneETH*6, balanceEthContract);
@@ -163,6 +193,26 @@ it('verification of ETH calculate of profit', async ()  => {
         //assert.equal(Number(OneETH*6 - OneETH*1.01), balanceEthContract);
     });
 
+    it('verification of Token withdraw', async ()  => {
+        var balanceTokenContract = await contract.getBalanceTokenContract.call();
+        assert.equal(OneETH*6, balanceTokenContract);
+        var countTransferIns = await contract.getCountTransferInsToken(accounts[4]);
+        assert.equal(3, countTransferIns);
+        for (var j = 0; j < countTransferIns; j++) {
+            var transferInsToken = await contract.getTokenTransferInsByAddress(accounts[4], j);
+            //console.log("transferInsETH[" + j + "]=" + JSON.stringify(transferInsETH));
+        }
+        await contract.withdrawToken({from:accounts[4]});
+        var countTransferIns = await contract.getCountTransferInsToken(accounts[4]);
+        //assert.equal(3, countTransferIns);
+        for (var j = 0; j < countTransferIns; j++) {
+            var transferInsToken = await contract.getTokenTransferInsByAddress(accounts[4], j);
+            //console.log("transferInsToken[" + j + "]=" + JSON.stringify(transferInsToken));
+        }
+        balanceTokenContract = await contract.getBalanceTokenContract.call();
+        //assert.equal(Number(OneETH*6 - OneETH*1.01), balanceEthContract);
+    });
+*/
 
 });
 
