@@ -82,10 +82,9 @@ contract Ownable {
 
 contract ContractStakeEth is Ownable {
     using SafeMath for uint256;
-    enum State {Active, Closed}
-    State public state;
+
     enum TypeStake {DAY, WEEK, MONTH}
-    TypeStake public typeStake;
+    TypeStake typeStake;
     enum StatusStake {ACTIVE, COMPLETED, CANCEL}
 
     struct TransferInStructETH {
@@ -101,7 +100,7 @@ contract ContractStakeEth is Ownable {
         StatusStake status;
     }
 
-    StakeStruct[] public arrayStakesETH;
+    StakeStruct[] arrayStakesETH;
 
     uint256[] public rates = [101, 109, 136];
 
@@ -112,18 +111,13 @@ contract ContractStakeEth is Ownable {
     mapping (address => uint256) balancesETH;
     mapping (address => uint256) totalDepositEth;
     mapping (address => uint256) totalWithdrawEth;
-    mapping (address => TransferInStructETH[]) public transferInsEth;
-    mapping (address => bool) public contractAdmins;
+    mapping (address => TransferInStructETH[]) transferInsEth;
+    mapping (address => bool) public contractUsers;
 
     event Withdraw(address indexed receiver, uint256 amount);
 
-    modifier inState(State _state) {
-        require(state == _state);
-        _;
-    }
-
-    modifier onlyOwnerOrAdmin() {
-        require(msg.sender == owner || contractAdmins[msg.sender]);
+    modifier onlyOwnerOrUser() {
+        require(msg.sender == owner || contractUsers[msg.sender]);
         _;
     }
 
@@ -134,30 +128,29 @@ contract ContractStakeEth is Ownable {
 
     function ContractStakeEth(address _owner) public {
         require(_owner != address(0));
-        owner = _owner;
+        //owner = _owner;
+        owner = msg.sender; // for test's
     }
 
     /**
     * @dev Add an contract admin
     */
-    function setContractAdmin(address _admin, bool _isAdmin) public onlyOwner {
-        contractAdmins[_admin] = _isAdmin;
+    function setContractUser(address _user, bool _isUser) public onlyOwner {
+        contractUsers[_user] = _isUser;
     }
 
-    function depositETH(address _investor, TypeStake _stakeType, uint256 _time) public inState(State.Active) payable returns (bool){
+    function depositETH(address _investor, TypeStake _stakeType, uint256 _time, uint256 _value) external returns (bool){
         require(_investor != address(0));
-        require(msg.sender != address(0));
-        require(msg.value > 0);
+        require(_value > 0);
         require(transferInsEth[_investor].length < 31);
-        balancesETH[_investor] = balancesETH[_investor].add(msg.value);
-        totalDepositEth[_investor] = totalDepositEth[_investor].add(msg.value);
-        totalDepositEthAll = totalDepositEthAll.add(msg.value);
-
+        balancesETH[_investor] = balancesETH[_investor].add(_value);
+        totalDepositEth[_investor] = totalDepositEth[_investor].add(_value);
+        totalDepositEthAll = totalDepositEthAll.add(_value);
         uint256 indexStake = arrayStakesETH.length;
 
         arrayStakesETH.push(StakeStruct({
             owner : _investor,
-            amount : msg.value,
+            amount : _value,
             stakeType : _stakeType,
             time : _time,
             status : StatusStake.ACTIVE
@@ -173,7 +166,7 @@ contract ContractStakeEth is Ownable {
  * @param _now The current time.
  * @return the amount of wei that can be withdrawn from contract
  */
-    function validWithdrawETH(address _address, uint256 _now) public inState(State.Active) returns (uint256){
+    function validWithdrawETH(address _address, uint256 _now) public returns (uint256){
         require(_address != address(0));
         uint256 amount = 0;
 
@@ -219,7 +212,7 @@ contract ContractStakeEth is Ownable {
         return this.balance;
     }
 
-    function withdrawETH(address _address) public inState(State.Active) returns (bool){
+    function withdrawETH(address _address) public returns (bool){
         require(_address != address(0));
         uint256 _currentTime = now;
         //_currentTime = 1523491200; // for test

@@ -51,6 +51,8 @@ library SafeMath {
 contract Ownable {
     address public owner;
 
+    address public ownerTwo;
+
     event OwnerChanged(address indexed previousOwner, address indexed newOwner);
 
     /**
@@ -65,7 +67,7 @@ contract Ownable {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-        require(msg.sender == owner);
+        require(msg.sender == owner || msg.sender == ownerTwo);
         _;
     }
 
@@ -82,22 +84,24 @@ contract Ownable {
 
 }
 
-interface ContractStakeEth {
+interface IContractStakeEth {
 
-    function depositETH(address _investor, uint _stakeType, uint256 _time) public payable returns (bool);
+    function depositETH(address _investor, uint8 _stakeType, uint256 _time, uint256 _value) external returns (bool);
+
     function validWithdrawETH(address _address, uint256 _now) public returns (uint256);
     function withdrawETH() public returns (bool);
     function cancel(uint256 _index) public returns (bool _result);
     function changeRates(uint8 _numberRate, uint256 _percent) public returns (bool);
 
+
     function getBalanceEthContract() public view returns (uint256);
-    function balanceOfETH(address _owner) public view returns (uint256 balance);
+    function balanceOfETH(address _owner) external view returns (uint256 balance);
     function getETHStakeByIndex(uint256 _index) public view returns (
         address _owner,
         uint256 _amount,
-        uint _stakeType,
+        uint8 _stakeType,
         uint256 _time,
-        uint _status
+        uint8 _status
     );
     function getETHTransferInsByAddress(address _address, uint256 _index) public view returns (
         uint256 _indexStake,
@@ -109,93 +113,72 @@ interface ContractStakeEth {
     function getTotalEthWithdrawByAddress(address _owner) public view returns (uint256 _amountEth);
     function setContractAdmin(address _admin, bool _isAdmin) public;
 
+    function setContractUser(address _user, bool _isUser) public;
     event Withdraw(address indexed receiver, uint256 amount);
 
 }
 
-interface ContractStakeToken {
-
-    function depositToken(address _investor, uint256 _amount, uint _stakeType, uint256 _time) public payable returns (bool);
-    function validWithdrawToken(address _address, uint256 _now) public returns (uint256);
-    function withdrawToken() public returns (bool);
-    function cancel(uint256 _index) public returns (bool _result);
-    function changeRates(uint8 _numberRate, uint256 _percent) public returns (bool);
-
-    function getBalanceTokenContract() public view returns (uint256);
-    function balanceOfToken(address _owner) public view returns (uint256 balance);
-    function getTokenStakeByIndex(uint256 _index) public view returns (
-        address _owner,
-        uint256 _amount,
-        uint _stakeType,
-        uint256 _time,
-        uint _status
-    );
-    function getTokenTransferInsByAddress(address _address, uint256 _index) public view returns (
-        uint256 _indexStake,
-        bool _isRipe
-    );
-    function getCountTransferInsToken(address _address) public view returns (uint256 _count);
-    function getCountStakesToken() public view returns (uint256 _count);
-    function getTotalTokenDepositByAddress(address _owner) public view returns (uint256 _amountEth);
-    function getTotalTokenWithdrawByAddress(address _owner) public view returns (uint256 _amountEth);
-    function setContractAdmin(address _admin, bool _isAdmin) public;
-
-    event Withdraw(address indexed receiver, uint256 amount);
-
-    }
-
-
 contract RapidProfit is Ownable {
     using SafeMath for uint256;
-    ContractStakeEth public contractStakeEth;
-    ContractStakeToken public contractStakeToken;
-
-    enum State {Active, Closed}
-    State public state;
-    uint256[] public rates = [101, 109, 136];
-
-    event Withdraw(address indexed receiver, uint256 amount);
+    IContractStakeEth public contractStakeEth;
+    //IContractStakeToken public contractStakeToken;
 
     function RapidProfit(address _owner) public {
         require(_owner != address(0));
         owner = _owner;
+        owner = msg.sender; // for test's
     }
 
     // fallback function can be used to buy tokens
     function() payable public {
-        //deposit(msg.sender, msg.value, TypeStake.DAY, now);
     }
-
-/*
-    function calculator(uint8 _currentStake, uint256 _amount, uint256 _amountDays) public view returns (uint256){
-        _amountDays = _amountDays*(1 days);
-        uint256 stakeAmount = _amount.mul(rates[_currentStake]).div(100);
-        return stakeAmount;
-    }
-*/
 
     function setContractStakeEth (address _addressContract) public onlyOwner {
         require(_addressContract != address(0));
-        contractStakeEth = ContractStakeEth(_addressContract);
+        contractStakeEth = IContractStakeEth(_addressContract);
     }
 
-    function setContractStakeToken (address _addressContract) public onlyOwner {
-        require(_addressContract != address(0));
-        contractStakeToken = ContractStakeToken(_addressContract);
+    function depositETH(address _investor, uint8 _stakeType, uint256 _time) external payable returns (bool){
+        require(_investor != address(0));
+        require(msg.value > 0);
+        bool result = contractStakeEth.depositETH(_investor, _stakeType, _time, msg.value);
+
+        return result;
     }
 
-    function withdrawOwner(uint256 _amount) public onlyOwner returns (bool) {
-        require(this.balance >= _amount);
-        owner.transfer(_amount);
-        Withdraw(owner, _amount);
+    function validWithdrawETH(address _address, uint256 _now) public returns (uint256 result){
+        require(_address != address(0));
+        require(_now > 0);
+        result = contractStakeEth.validWithdrawETH(_address, _now);
     }
 
-    function changeRates(uint8 _numberRate, uint256 _percent) public onlyOwner returns (bool) {
-        require(_percent >= 0);
-        require(0 <= _numberRate && _numberRate < 3);
-        rates[_numberRate] = _percent.add(100);
-        return true;
+    function balanceOfETH(address _owner) public view returns (uint256 balance) {
+        return contractStakeEth.balanceOfETH(_owner);
+    }
 
+    function getCountStakesEth() public view returns (uint256 result) {
+        result = contractStakeEth.getCountStakesEth();
+    }
+
+    function getCountTransferInsEth(address _address) public view returns (uint256 result) {
+        result = contractStakeEth.getCountTransferInsEth(_address);
+    }
+
+    function getETHStakeByIndex(uint256 _index) public view returns (
+        address _owner,
+        uint256 _amount,
+        uint8 _stakeType,
+        uint256 _time,
+        uint8 _status
+    ) {
+        (_owner, _amount, _stakeType, _time, _status) = contractStakeEth.getETHStakeByIndex(_index);
+    }
+
+    function getETHTransferInsByAddress(address _address, uint256 _index) public view returns (
+        uint256 _indexStake,
+        bool _isRipe
+    ) {
+        (_indexStake, _isRipe) = contractStakeEth.getETHTransferInsByAddress(_address, _index);
     }
 
     function removeContract() public onlyOwner {
