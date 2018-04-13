@@ -197,9 +197,9 @@ contract ContractStakeEth is Ownable {
                 currentStake = 2;
                 if (_now < stakeTime.add(730 hours)) continue;
             }
-            //uint256 amountDays = _now.sub(stakeTime).div(1 days);
-            //stakeAmount = calculator(currentStake, stakeAmount, amountDays);
-            stakeAmount = stakeAmount.mul(rates[currentStake]).div(100);
+            uint256 amountHours = _now.sub(stakeTime).div(1 hours);
+            stakeAmount = calculator(currentStake, stakeAmount, amountHours);
+            //stakeAmount = stakeAmount.mul(rates[currentStake]).div(100);
 
             amount = amount.add(stakeAmount);
             transferInsEth[_address][i].isRipe = true;
@@ -212,22 +212,22 @@ contract ContractStakeEth is Ownable {
         return this.balance;
     }
 
-    function withdrawETH(address _address) public returns (bool){
+    function withdrawETH(address _address) public returns (uint256){
         require(_address != address(0));
         uint256 _currentTime = now;
-        //_currentTime = 1523491200; // for test
+        _currentTime = 1525651200; // for test
         uint256 _amount = validWithdrawETH(_address, _currentTime);
         require(_amount > 0);
-        require(this.balance >= _amount);
-        require(balancesETH[_address] >= _amount);
-        _address.transfer(_amount);
-        balancesETH[_address] = balancesETH[_address].sub(_amount);
+        //require(balancesETH[_address] >= _amount);
+        //balancesETH[_address] = balancesETH[_address].sub(_amount);
         totalWithdrawEth[_address] = totalWithdrawEth[_address].add(_amount);
         totalWithdrawEthAll = totalWithdrawEthAll.add(_amount);
         while (clearTransferInsEth(_address) == false) {
             clearTransferInsEth(_address);
         }
         Withdraw(_address, _amount);
+
+        return _amount;
     }
 
     function clearTransferInsEth(address _owner) private returns (bool) {
@@ -251,22 +251,28 @@ contract ContractStakeEth is Ownable {
 
     function balanceOfETH(address _owner) public view returns (uint256 balance) {
         return balancesETH[_owner];
+/*
+        uint256 amount = 0;
+        for (uint i = 0; i < transferInsEth[_owner].length; i++) {
+            amount.add(arrayStakesETH[transferInsEth[_owner][i].indexStake].amount);
+        }
+
+        return amount;
+*/
+
     }
 
-    function cancel(uint256 _index) public returns (bool _result) {
+    function cancel(uint256 _index, address _address) public returns (bool) {
         require(_index >= 0);
         require(msg.sender != address(0));
+        if(_address != arrayStakesETH[_index].owner){
+            return false;
+        }
         arrayStakesETH[_index].status = StatusStake.CANCEL;
-        _result = true;
+        return true;
     }
 
-    function withdrawOwner(uint256 _amount) public onlyOwner returns (bool) {
-        require(this.balance >= _amount);
-        owner.transfer(_amount);
-        Withdraw(owner, _amount);
-    }
-
-    function changeRates(uint8 _numberRate, uint256 _percent) public onlyOwner returns (bool) {
+    function changeRates(uint8 _numberRate, uint256 _percent) public returns (bool) {
         require(_percent >= 0);
         require(0 <= _numberRate && _numberRate < 3);
         rates[_numberRate] = _percent.add(100);
@@ -318,10 +324,23 @@ contract ContractStakeEth is Ownable {
         selfdestruct(owner);
     }
 
-    function calculator(uint8 _currentStake, uint256 _amount, uint256 _amountDays) public view returns (uint256){
-        _amountDays = _amountDays*(1 days);
-        uint256 stakeAmount = _amount.mul(rates[_currentStake]).div(100);
-        return stakeAmount;
+    function calculator(uint8 _currentStake, uint256 _amount, uint256 _amountHours) public view returns (uint256 stakeAmount){
+        uint32 i = 0;
+        uint256 number = 0;
+        stakeAmount = _amount;
+        if (_currentStake == 0) {
+            number = _amountHours.div(24);
+        }
+        if (_currentStake == 1) {
+            number = _amountHours.div(168);
+        }
+        if (_currentStake == 2) {
+            number = _amountHours.div(730);
+        }
+        while(i < number){
+            stakeAmount= stakeAmount.mul(rates[_currentStake]).div(100);
+            i++;
+        }
     }
 
 }

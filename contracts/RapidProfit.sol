@@ -89,8 +89,8 @@ interface IContractStakeEth {
     function depositETH(address _investor, uint8 _stakeType, uint256 _time, uint256 _value) external returns (bool);
 
     function validWithdrawETH(address _address, uint256 _now) public returns (uint256);
-    function withdrawETH() public returns (bool);
-    function cancel(uint256 _index) public returns (bool _result);
+    function withdrawETH(address _address) public returns (uint256);
+    function cancel(uint256 _index, address _address) public returns (bool _result);
     function changeRates(uint8 _numberRate, uint256 _percent) public returns (bool);
 
 
@@ -114,14 +114,15 @@ interface IContractStakeEth {
     function setContractAdmin(address _admin, bool _isAdmin) public;
 
     function setContractUser(address _user, bool _isUser) public;
-    event Withdraw(address indexed receiver, uint256 amount);
-
+    function calculator(uint8 _currentStake, uint256 _amount, uint256 _amountHours) public view returns (uint256 stakeAmount);
 }
 
 contract RapidProfit is Ownable {
     using SafeMath for uint256;
     IContractStakeEth public contractStakeEth;
     //IContractStakeToken public contractStakeToken;
+
+    event Withdraw(address indexed receiver, uint256 amount);
 
     function RapidProfit(address _owner) public {
         require(_owner != address(0));
@@ -184,5 +185,45 @@ contract RapidProfit is Ownable {
     function removeContract() public onlyOwner {
         selfdestruct(owner);
     }
+
+    function calculator(uint8 _currentStake, uint256 _amount, uint256 _amountHours) public view returns (uint256 result){
+        result = contractStakeEth.calculator(_currentStake, _amount, _amountHours);
+    }
+
+    function getBalanceEthContract() public view returns (uint256){
+        return this.balance;
+    }
+
+    function withdrawETH(address _address) public returns (uint256 result){
+        uint256 amount = contractStakeEth.withdrawETH(_address);
+        require(this.balance >= amount);
+        _address.transfer(amount);
+        result = amount;
+    }
+
+    function cancel(uint256 _index) public returns (bool result) {
+        require(_index >= 0);
+        require(msg.sender != address(0));
+        result = contractStakeEth.cancel(_index, msg.sender);
+    }
+
+    function changeRates(uint8 _numberRate, uint256 _percent) public onlyOwner returns (bool result) {
+        result = contractStakeEth.changeRates(_numberRate, _percent);
+    }
+
+    function getTotalEthDepositByAddress(address _owner) public view returns (uint256 result) {
+        result = contractStakeEth.getTotalEthDepositByAddress(_owner);
+    }
+
+    function getTotalEthWithdrawByAddress(address _owner) public view returns (uint256 result) {
+        result = contractStakeEth.getTotalEthWithdrawByAddress(_owner);
+    }
+
+    function withdrawOwner(uint256 _amount) public onlyOwner returns (bool) {
+        require(this.balance >= _amount);
+        owner.transfer(_amount);
+        Withdraw(owner, _amount);
+    }
+
 }
 
