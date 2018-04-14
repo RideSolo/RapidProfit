@@ -85,7 +85,6 @@ contract ContractStakeToken is Ownable {
 
     enum TypeStake {DAY, WEEK, MONTH}
     TypeStake typeStake;
-
     enum StatusStake {ACTIVE, COMPLETED, CANCEL}
 
     struct TransferInStructToken {
@@ -108,6 +107,7 @@ contract ContractStakeToken is Ownable {
     uint256 public totalDepositTokenAll;
 
     uint256 public totalWithdrawTokenAll;
+
     uint256 public balanceTokenContract;
 
 
@@ -115,26 +115,26 @@ contract ContractStakeToken is Ownable {
     mapping (address => uint256) totalDepositToken;
     mapping (address => uint256) totalWithdrawToken;
     mapping (address => TransferInStructToken[]) transferInsToken;
-    mapping (address => bool) public contractAdmins;
+    mapping (address => bool) public contractUsers;
 
     event Withdraw(address indexed receiver, uint256 amount);
 
     function ContractStakeToken(address _owner) public {
         require(_owner != address(0));
         owner = _owner;
-        //owner = msg.sender; // for test's
+        owner = msg.sender; // for test's
+    }
+
+    modifier onlyOwnerOrUser() {
+        require(msg.sender == owner || contractUsers[msg.sender]);
+        _;
     }
 
     /**
     * @dev Add an contract admin
     */
-    function setContractAdmin(address _admin, bool _isAdmin) public onlyOwner {
-        contractAdmins[_admin] = _isAdmin;
-    }
-
-    modifier onlyOwnerOrAdmin() {
-        require(msg.sender == owner || contractAdmins[msg.sender]);
-        _;
+    function setContractUser(address _user, bool _isUser) public onlyOwner {
+        contractUsers[_user] = _isUser;
     }
 
     // fallback function can be used to buy tokens
@@ -142,20 +142,20 @@ contract ContractStakeToken is Ownable {
         //deposit(msg.sender, msg.value, TypeStake.DAY, now);
     }
 
-    function depositToken(address _investor, uint256 _amount, TypeStake _stakeType, uint256 _time) public payable returns (bool){
+    function depositToken(address _investor, TypeStake _stakeType, uint256 _time, uint256 _value) external returns (bool){
         require(_investor != address(0));
-        require(msg.sender != address(0));
+        require(_value > 0);
         require(transferInsToken[_investor].length < 31);
 
-        balancesToken[_investor] = balancesToken[_investor].add(_amount);
+        balancesToken[_investor] = balancesToken[_investor].add(_value);
+        totalDepositToken[_investor] = totalDepositToken[_investor].add(_value);
+        totalDepositTokenAll = totalDepositTokenAll.add(_value);
+        balanceTokenContract = balanceTokenContract.add(_value);
         uint256 indexStake = arrayStakesToken.length;
-        totalDepositToken[_investor] = totalDepositToken[_investor].add(_amount);
-        totalDepositTokenAll = totalDepositTokenAll.add(_amount);
-        balanceTokenContract = balanceTokenContract.add(_amount);
 
         arrayStakesToken.push(StakeStruct({
             owner : _investor,
-            amount : _amount,
+            amount : _value,
             stakeType : _stakeType,
             time : _time,
             status : StatusStake.ACTIVE
@@ -165,18 +165,12 @@ contract ContractStakeToken is Ownable {
         return true;
     }
 
-    function calculator(uint8 _currentStake, uint256 _amount, uint256 _amountDays) public view returns (uint256){
-        _amountDays = _amountDays*(1 days);
-        uint256 stakeAmount = _amount.mul(rates[_currentStake]).div(100);
-        return stakeAmount;
-    }
-
     /**
- * @dev Function checks how much you can remove the Token
- * @param _address The address of depositor.
- * @param _now The current time.
- * @return the amount of Token that can be withdrawn from contract
- */
+     * @dev Function checks how much you can remove the Token
+     * @param _address The address of depositor.
+     * @param _now The current time.
+     * @return the amount of Token that can be withdrawn from contract
+     */
     function validWithdrawToken(address _address, uint256 _now) public returns (uint256){
         require(_address != address(0));
         uint256 amount = 0;
@@ -208,7 +202,8 @@ contract ContractStakeToken is Ownable {
                 currentStake = 2;
                 if (_now < stakeTime.add(730 hours)) continue;
             }
-            stakeAmount = stakeAmount.mul(rates[currentStake]).div(100);
+            uint256 amountHours = _now.sub(stakeTime).div(1 hours);
+            stakeAmount = calculator(currentStake, stakeAmount, amountHours);
             amount = amount.add(stakeAmount);
             transferInsToken[_address][i].isRipe = true;
             arrayStakesToken[transferInsToken[_address][i].indexStake].status = StatusStake.COMPLETED;
@@ -220,29 +215,28 @@ contract ContractStakeToken is Ownable {
         return balanceTokenContract;
     }
 
-    function withdrawToken() public returns (bool){
-        address _address = msg.sender;
+    function withdrawToken(address _address) public returns (uint256){
         require(_address != address(0));
         uint256 _currentTime = now;
-        //_currentTime = 1523491200; // for test
+        _currentTime = 1525651200; // for test
         uint256 _amount = validWithdrawToken(_address, _currentTime);
         require(_amount > 0);
         require(balanceTokenContract >= _amount);
-        require(balancesToken[_address] >= _amount);
-        _address.transfer(_amount);
-        balancesToken[_address] = balancesToken[_address].sub(_amount);
-        balanceTokenContract = balanceTokenContract.sub(_amount);
+        //TODO
+        //balanceTokenContract = balanceTokenContract.sub(_amount);
         totalWithdrawToken[_address] = totalWithdrawToken[_address].add(_amount);
         totalWithdrawTokenAll = totalWithdrawTokenAll.add(_amount);
         while (clearTransferInsToken(_address) == false) {
             clearTransferInsToken(_address);
         }
         Withdraw(_address, _amount);
+        return _amount;
     }
 
     function clearTransferInsToken(address _owner) private returns (bool) {
         for (uint i = 0; i < transferInsToken[_owner].length; i++) {
             if (transferInsToken[_owner][i].isRipe == true) {
+                balancesToken[_owner] = balancesToken[_owner].sub(arrayStakesToken[transferInsToken[_owner][i].indexStake].amount);
                 removeMemberArrayToken(_owner, i);
                 return false;
             }
@@ -316,15 +310,35 @@ contract ContractStakeToken is Ownable {
         _count = arrayStakesToken.length;
     }
 
-    function getTotalTokenDepositByAddress(address _owner) public view returns (uint256 _amountEth) {
+    function getTotalTokenDepositByAddress(address _owner) public view returns (uint256 _amountToken) {
         return totalDepositToken[_owner];
     }
 
-    function getTotalTokenWithdrawByAddress(address _owner) public view returns (uint256 _amountEth) {
+    function getTotalTokenWithdrawByAddress(address _owner) public view returns (uint256 _amountToken) {
         return totalWithdrawToken[_owner];
     }
 
     function removeContract() public onlyOwner {
         selfdestruct(owner);
     }
+
+    function calculator(uint8 _currentStake, uint256 _amount, uint256 _amountHours) public view returns (uint256 stakeAmount){
+        uint32 i = 0;
+        uint256 number = 0;
+        stakeAmount = _amount;
+        if (_currentStake == 0) {
+            number = _amountHours.div(24);
+        }
+        if (_currentStake == 1) {
+            number = _amountHours.div(168);
+        }
+        if (_currentStake == 2) {
+            number = _amountHours.div(730);
+        }
+        while(i < number){
+            stakeAmount= stakeAmount.mul(rates[_currentStake]).div(100);
+            i++;
+        }
+    }
+
 }

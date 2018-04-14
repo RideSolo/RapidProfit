@@ -108,6 +108,9 @@ contract ContractStakeEth is Ownable {
 
     uint256 public totalWithdrawEthAll;
 
+
+
+
     mapping (address => uint256) balancesETH;
     mapping (address => uint256) totalDepositEth;
     mapping (address => uint256) totalWithdrawEth;
@@ -115,6 +118,12 @@ contract ContractStakeEth is Ownable {
     mapping (address => bool) public contractUsers;
 
     event Withdraw(address indexed receiver, uint256 amount);
+
+    function ContractStakeEth(address _owner) public {
+        require(_owner != address(0));
+        //owner = _owner;
+        owner = msg.sender; // for test's
+    }
 
     modifier onlyOwnerOrUser() {
         require(msg.sender == owner || contractUsers[msg.sender]);
@@ -124,12 +133,6 @@ contract ContractStakeEth is Ownable {
     // fallback function can be used to buy tokens
     function() payable public {
         //deposit(msg.sender, msg.value, TypeStake.DAY, now);
-    }
-
-    function ContractStakeEth(address _owner) public {
-        require(_owner != address(0));
-        //owner = _owner;
-        owner = msg.sender; // for test's
     }
 
     /**
@@ -143,6 +146,7 @@ contract ContractStakeEth is Ownable {
         require(_investor != address(0));
         require(_value > 0);
         require(transferInsEth[_investor].length < 31);
+
         balancesETH[_investor] = balancesETH[_investor].add(_value);
         totalDepositEth[_investor] = totalDepositEth[_investor].add(_value);
         totalDepositEthAll = totalDepositEthAll.add(_value);
@@ -161,11 +165,11 @@ contract ContractStakeEth is Ownable {
     }
 
     /**
- * @dev Function checks how much you can remove the ETH
- * @param _address The address of depositor.
- * @param _now The current time.
- * @return the amount of wei that can be withdrawn from contract
- */
+     * @dev Function checks how much you can remove the ETH
+     * @param _address The address of depositor.
+     * @param _now The current time.
+     * @return the amount of wei that can be withdrawn from contract
+     */
     function validWithdrawETH(address _address, uint256 _now) public returns (uint256){
         require(_address != address(0));
         uint256 amount = 0;
@@ -226,7 +230,6 @@ contract ContractStakeEth is Ownable {
             clearTransferInsEth(_address);
         }
         Withdraw(_address, _amount);
-
         return _amount;
     }
 

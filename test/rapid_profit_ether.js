@@ -22,22 +22,6 @@ contract('ContractStakeEth', (accounts) => {
 });
 
 /*
-contract('ContractStakeToken', (accounts) => {
-    it('should deployed ContractStakeToken', async ()  => {
-        assert.equal(undefined, contractStakeToken);
-        contractStakeToken = await ContractStakeToken.deployed();
-        assert.notEqual(undefined, contractStakeToken);
-    });
-
-    it('get address ContractStakeToken', async ()  => {
-        assert.notEqual(undefined, contractStakeToken.address);
-        contractOwner = await contractStakeEth.owner.call();
-        console.log("contractOwner = " + contractOwner);
-    });
-});
-*/
-
-
 contract('RapidProfit', (accounts) => {
     var owner = "0x250AF0D95B2C467234A3fEa315869FFE421Ca5c0";
     var TwoETH = 2*10**18;
@@ -201,3 +185,4 @@ contract('RapidProfit', (accounts) => {
         });
 
 });
+*/
