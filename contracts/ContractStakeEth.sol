@@ -233,6 +233,7 @@ contract ContractStakeEth is Ownable {
     function clearTransferInsEth(address _owner) private returns (bool) {
         for (uint i = 0; i < transferInsEth[_owner].length; i++) {
             if (transferInsEth[_owner][i].isRipe == true) {
+                balancesETH[_owner] = balancesETH[_owner].sub(arrayStakesETH[transferInsEth[_owner][i].indexStake].amount);
                 removeMemberArrayEth(_owner, i);
                 return false;
             }
@@ -251,15 +252,6 @@ contract ContractStakeEth is Ownable {
 
     function balanceOfETH(address _owner) public view returns (uint256 balance) {
         return balancesETH[_owner];
-/*
-        uint256 amount = 0;
-        for (uint i = 0; i < transferInsEth[_owner].length; i++) {
-            amount.add(arrayStakesETH[transferInsEth[_owner][i].indexStake].amount);
-        }
-
-        return amount;
-*/
-
     }
 
     function cancel(uint256 _index, address _address) public returns (bool) {

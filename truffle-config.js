@@ -5,8 +5,7 @@ module.exports = {
             host: "localhost",
             port: 8545,
             network_id: "*",
-            gas: 9600000,
-	gasLimit: 0x8000000
+            gas: 4600000
         }
     }
 };

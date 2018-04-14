@@ -183,6 +183,7 @@ contract('RapidProfit', (accounts) => {
 
             balanceAccountBefore = await contractRP.balanceOfETH(accounts[4]);
             //console.log("balanceAccountBefore = " + balanceAccountBefore);
+            assert.equal(OneETH*3, balanceAccountBefore);
 
             var amount = await contractRP.validWithdrawETH.call(accounts[4], 1525651200, {from:accounts[4]});
             //console.log("amount = " + amount);
@@ -194,6 +195,9 @@ contract('RapidProfit', (accounts) => {
             balanceEthContract = await contractRP.getBalanceEthContract.call();
             //console.log("balanceEthContract = " + balanceEthContract);
             assert.equal(Number(OneETH*6 - amount), balanceEthContract);
+            balanceAccountAfter = await contractRP.balanceOfETH(accounts[4]);
+            assert.equal(0, balanceAccountAfter);
+            //console.log("balanceAccountAfter = " + balanceAccountAfter);
         });
 
 });

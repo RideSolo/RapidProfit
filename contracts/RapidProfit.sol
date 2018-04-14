@@ -207,7 +207,7 @@ contract RapidProfit is Ownable {
         result = contractStakeEth.cancel(_index, msg.sender);
     }
 
-    function changeRates(uint8 _numberRate, uint256 _percent) public onlyOwner returns (bool result) {
+    function changeRatesEth(uint8 _numberRate, uint256 _percent) public onlyOwner returns (bool result) {
         result = contractStakeEth.changeRates(_numberRate, _percent);
     }
 
