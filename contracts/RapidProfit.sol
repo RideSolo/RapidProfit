@@ -146,10 +146,20 @@ interface IContractStakeToken {
     function calculator(uint8 _currentStake, uint256 _amount, uint256 _amountHours) public view returns (uint256 stakeAmount);
 }
 
+interface IERC20Token {
+    function transfer(address _to, uint256 _value) returns (bool success);
+    function balanceOf(address _owner) constant returns (uint256 balance);
+    function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success);
+    function test() public returns (address _address);
+}
+
 contract RapidProfit is Ownable {
     using SafeMath for uint256;
     IContractStakeEth public contractStakeEth;
     IContractStakeToken public contractStakeToken;
+    IERC20Token public contractErc20Token;
+
+    uint256 public balanceTokenContract;
 
     event WithdrawEther(address indexed receiver, uint256 amount);
     event WithdrawToken(address indexed receiver, uint256 amount);
@@ -174,6 +184,11 @@ contract RapidProfit is Ownable {
         contractStakeToken = IContractStakeToken(_addressContract);
     }
 
+    function setContractErc20Token (address _addressContract) public onlyOwner {
+        require(_addressContract != address(0));
+        contractErc20Token = IERC20Token(_addressContract);
+    }
+
     function depositETH(address _investor, uint8 _stakeType, uint256 _time) external payable returns (bool){
         require(_investor != address(0));
         require(msg.value > 0);
@@ -186,6 +201,8 @@ contract RapidProfit is Ownable {
         require(_investor != address(0));
         require(_value > 0);
         bool result = contractStakeToken.depositToken(_investor, _stakeType, _time, _value);
+        balanceTokenContract = balanceTokenContract.add(_value);
+        //contractErc20Token.
 
         return result;
     }
@@ -277,7 +294,7 @@ contract RapidProfit is Ownable {
     }
 
     function getBalanceTokenContract() public view returns (uint256 result){
-        result = contractStakeToken.getBalanceTokenContract();
+        return contractErc20Token.balanceOf(this);
     }
 
     function withdrawETH(address _address) public returns (uint256 result){
@@ -289,9 +306,11 @@ contract RapidProfit is Ownable {
 
     function withdrawToken(address _address) public returns (uint256 result){
         uint256 amount = contractStakeToken.withdrawToken(_address);
-        require(getBalanceTokenContract() >= amount);
-        //TODO
-        //_address.transfer(amount);
+        //require(balanceTokenContract >= amount);
+        //bool success = contractErc20Token.transfer(_address, amount);
+        //require(success);
+        //balanceTokenContract = balanceTokenContract.sub(amount);
+        WithdrawToken(_address, amount);
         result = amount;
     }
 

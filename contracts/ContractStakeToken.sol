@@ -108,9 +108,6 @@ contract ContractStakeToken is Ownable {
 
     uint256 public totalWithdrawTokenAll;
 
-    uint256 public balanceTokenContract;
-
-
     mapping (address => uint256) balancesToken;
     mapping (address => uint256) totalDepositToken;
     mapping (address => uint256) totalWithdrawToken;
@@ -150,7 +147,6 @@ contract ContractStakeToken is Ownable {
         balancesToken[_investor] = balancesToken[_investor].add(_value);
         totalDepositToken[_investor] = totalDepositToken[_investor].add(_value);
         totalDepositTokenAll = totalDepositTokenAll.add(_value);
-        balanceTokenContract = balanceTokenContract.add(_value);
         uint256 indexStake = arrayStakesToken.length;
 
         arrayStakesToken.push(StakeStruct({
@@ -211,19 +207,12 @@ contract ContractStakeToken is Ownable {
         return amount;
     }
 
-    function getBalanceTokenContract() public view returns (uint256){
-        return balanceTokenContract;
-    }
-
     function withdrawToken(address _address) public returns (uint256){
         require(_address != address(0));
         uint256 _currentTime = now;
         _currentTime = 1525651200; // for test
         uint256 _amount = validWithdrawToken(_address, _currentTime);
         require(_amount > 0);
-        require(balanceTokenContract >= _amount);
-        //TODO
-        //balanceTokenContract = balanceTokenContract.sub(_amount);
         totalWithdrawToken[_address] = totalWithdrawToken[_address].add(_amount);
         totalWithdrawTokenAll = totalWithdrawTokenAll.add(_amount);
         while (clearTransferInsToken(_address) == false) {

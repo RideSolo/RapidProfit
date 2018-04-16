@@ -1,8 +1,10 @@
 var RapidProfit = artifacts.require("./RapidProfit.sol");
 var ContractStakeToken = artifacts.require('./ContractStakeToken.sol');
+var ERC20Token = artifacts.require('./ERC20Token.sol');
 
 var contractRP;
 var contractToken;
+var contractErc20;
 
 contract('ContractStakeToken', (accounts) => {
     it('should deployed ContractStakeToken', async ()  => {
@@ -18,12 +20,27 @@ contract('ContractStakeToken', (accounts) => {
     });
 });
 
+contract('ERC20Token', (accounts) => {
+    var OneToken = 1*10**18;
+    it('should deployed ERC20Token', async ()  => {
+        assert.equal(undefined, contractErc20);
+        contractErc20 = await ERC20Token.deployed();
+        assert.notEqual(undefined, contractErc20);
+    });
+
+    it('get address ERC20Token', async ()  => {
+        assert.notEqual(undefined, contractErc20.address);
+        var balanceOwner = await contractErc20.balanceOf.call(accounts[0]);
+        //console.log("balanceOwner(ERC20Token) = " + balanceOwner);
+        assert.equal(10000000000000000, balanceOwner);
+    });
+});
 
 
 contract('RapidProfit', (accounts) => {
     var owner = "0x250AF0D95B2C467234A3fEa315869FFE421Ca5c0";
-    var TwoToken = 2*10**18;
-    var OneToken = 1*10**18;
+    var TwoToken = 2*10**8;
+    var OneToken = 1*10**8;
 
 
     it('should deployed contract RapidProfit', async ()  => {
@@ -154,9 +171,19 @@ contract('RapidProfit', (accounts) => {
     });
 
         it('verification of Token withdraw', async ()  => {
-            var balanceTokenContract = await contractRP.getBalanceTokenContract.call();
+            var test = await contractErc20.test.call({from:accounts[0]});
+            console.log("msg.sender = " + test + "; accounts[0] =" + accounts[0]);
+
+            var balanceOwner = await contractErc20.balanceOf.call(accounts[0]);
+            console.log("balanceOwner(ERC20Token) = " + balanceOwner);
+
+            var result = await contractErc20.transfer(contractRP.address, 50*OneToken, {from:accounts[0]});
+            console.log(JSON.stringify(result));
+            var balanceErc20Owner = await contractErc20.balanceOf.call(contractRP.address);
+            console.log("balanceErc20Owner = " + balanceErc20Owner);
+            //var balanceTokenContract = await contractRP.getBalanceTokenContract.call();
             //console.log("balanceTokenContract = " + balanceTokenContract);
-            assert.equal(OneToken*6, balanceTokenContract);
+            //assert.equal(OneToken*6, balanceTokenContract);
             var countTransferIns = await contractRP.getCountTransferInsToken(accounts[4]);
             assert.equal(3, countTransferIns);
             for (var j = 0; j < countTransferIns; j++) {
@@ -175,7 +202,7 @@ contract('RapidProfit', (accounts) => {
             assert.equal(Number(amount), Number(amount2));
             await contractRP.withdrawToken(accounts[4], {from:accounts[4]});
 
-            balanceTokenContract = await contractRP.getBalanceTokenContract.call();
+            //balanceTokenContract = await contractRP.getBalanceTokenContract.call();
             //console.log("balanceTokenContract = " + balanceTokenContract);
             //assert.equal(Number(OneToken*6 - amount), balanceTokenContract);
             balanceAccountAfter = await contractRP.balanceOfToken(accounts[4]);
