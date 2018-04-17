@@ -7,3 +7,13 @@ module.exports = (deployer) => {
     deployer.deploy(RapidProfit, owner);
 
 };
+
+// ContractStakeEth
+// https://ropsten.etherscan.io/address/0xd9c4ac82a2f6069ef9808ae45fb696ffb0cdf234
+
+// ContractStakeToken
+//  https://ropsten.etherscan.io/address/0x30847ced91523a7dfc54a91800e1a0761b4a3769
+
+// !!! Rapid Profit
+// https://ropsten.etherscan.io/address/0x758ccd5fcfecd8052ad0eaadae5ae9c01ac843b9#code
+
