@@ -56,8 +56,19 @@ contract('RapidProfit', (accounts) => {
     });
 
 
-    it('check set ContractStakeToken', async ()  => {
+    it('check set ContractStakeToken & ContractErc20', async ()  => {
         await contractRP.setContractStakeToken(contractToken.address);
+        await contractRP.setContractErc20Token(contractErc20.address);
+
+        await contractToken.setContractUser(contractRP.address, true);
+        //console.log("contractRP.address = " + contractRP.address);
+
+        await contractErc20.transfer(contractRP.address, 50*OneToken, {from:accounts[0]});
+        await contractErc20.transfer(accounts[1], 10*OneToken, {from:accounts[0]});
+        await contractErc20.transfer(accounts[4], 10*OneToken, {from:accounts[0]});
+        await contractErc20.approve(contractRP.address, 10*OneToken, {from:accounts[1]});
+        await contractErc20.approve(contractRP.address, 10*OneToken, {from:accounts[4]});
+
     });
 
     it('verification of Token deposition', async ()  => {
@@ -131,7 +142,7 @@ contract('RapidProfit', (accounts) => {
 
         var profitStake30Days = await contractRP.calculatorToken.call(2, OneToken, 1470);
         //console.log("profitStake30Days(1470)=" + profitStake30Days);
-        assert.equal(Number(OneToken*1.36*1.36) - 300, profitStake30Days);
+        assert.equal(Number(OneToken*1.36*1.36), profitStake30Days);
 
         var currentTime = 1522800002; // Wed, 04 Apr 2018 00:00:02 GMT
         balanceAccountForBefore = await contractRP.balanceOfToken(accounts[4]);
@@ -167,22 +178,18 @@ contract('RapidProfit', (accounts) => {
         profitStake2 = await contractRP.calculatorToken.call(2, OneToken, Number((newTime - currentTime)/3600));
         profitAll = Number(profitStake0) + Number(profitStake1) + Number(profitStake2);
         //console.log("amount32Days = " + amount32Days + "; profitAll =" + profitAll)
-        assert.equal(Number(profitAll - 47), amount32Days);
+        assert.equal(Number(profitAll), amount32Days);
     });
 
         it('verification of Token withdraw', async ()  => {
-            var test = await contractErc20.test.call({from:accounts[0]});
-            console.log("msg.sender = " + test + "; accounts[0] =" + accounts[0]);
-
             var balanceOwner = await contractErc20.balanceOf.call(accounts[0]);
-            console.log("balanceOwner(ERC20Token) = " + balanceOwner);
+            //console.log("balanceOwner(ERC20Token) = " + balanceOwner);
 
-            var result = await contractErc20.transfer(contractRP.address, 50*OneToken, {from:accounts[0]});
-            console.log(JSON.stringify(result));
-            var balanceErc20Owner = await contractErc20.balanceOf.call(contractRP.address);
-            console.log("balanceErc20Owner = " + balanceErc20Owner);
-            //var balanceTokenContract = await contractRP.getBalanceTokenContract.call();
+            var balanceRP = await contractErc20.balanceOf.call(contractRP.address);
+            //console.log("balanceContractRP = " + balanceRP);
+            var balanceTokenContract = await contractRP.getBalanceTokenContract.call();
             //console.log("balanceTokenContract = " + balanceTokenContract);
+
             //assert.equal(OneToken*6, balanceTokenContract);
             var countTransferIns = await contractRP.getCountTransferInsToken(accounts[4]);
             assert.equal(3, countTransferIns);
@@ -208,6 +215,32 @@ contract('RapidProfit', (accounts) => {
             balanceAccountAfter = await contractRP.balanceOfToken(accounts[4]);
             assert.equal(0, balanceAccountAfter);
             //console.log("balanceAccountAfter = " + balanceAccountAfter);
+        });
+
+        it('verification of Token cancel', async ()  => {
+                var currentTime = 1522800002; // Wed, 04 Apr 2018 00:00:02 GMT
+                balanceAccountForBefore = await contractRP.balanceOfToken(accounts[4]);
+                //indexStake = await contractRP.depositToken.call(accounts[4], 2, currentTime, OneToken, {from:accounts[0]});
+                //console.log("indexStake = " + indexStake);
+                await contractRP.depositToken(accounts[4], 2, currentTime, OneToken, {from:accounts[0]});
+                var countStakes = await contractRP.getCountStakesToken();
+                assert.equal(6, countStakes);
+                //console.log("countStakes=" + countStakes);
+                for (var i = 0; i < countStakes; i++) {
+                    var stakeToken = await contractRP.getTokenStakeByIndex(i);
+                    //console.log("stakeToken["+ i +"]=" + JSON.stringify(stakeToken));
+                }
+                var newTime = 1523491200; //Fri, 12 Apr 2018 00:00:00 GMT
+                var amountZero = await contractRP.validWithdrawToken.call(accounts[4], newTime, {from:accounts[4]});
+                assert.equal(0, amountZero);
+                //console.log("amount = " + amountZero);
+
+                await contractRP.cancelToken(countStakes -1 , {from:accounts[4]});
+                var amount = await contractRP.validWithdrawToken.call(accounts[4], newTime, {from:accounts[4]});
+                //console.log("amount = " + amount);
+                assert.equal(OneToken, amount);
+
+
         });
 
 

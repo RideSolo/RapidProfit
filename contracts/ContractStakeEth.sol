@@ -121,18 +121,13 @@ contract ContractStakeEth is Ownable {
 
     function ContractStakeEth(address _owner) public {
         require(_owner != address(0));
-        //owner = _owner;
+        owner = _owner;
         owner = msg.sender; // for test's
     }
 
     modifier onlyOwnerOrUser() {
         require(msg.sender == owner || contractUsers[msg.sender]);
         _;
-    }
-
-    // fallback function can be used to buy tokens
-    function() payable public {
-        //deposit(msg.sender, msg.value, TypeStake.DAY, now);
     }
 
     /**
@@ -142,7 +137,12 @@ contract ContractStakeEth is Ownable {
         contractUsers[_user] = _isUser;
     }
 
-    function depositETH(address _investor, TypeStake _stakeType, uint256 _time, uint256 _value) external returns (bool){
+    // fallback function can be used to buy tokens
+    function() payable public {
+        //deposit(msg.sender, msg.value, TypeStake.DAY, now);
+    }
+
+    function depositETH(address _investor, TypeStake _stakeType, uint256 _time, uint256 _value) onlyOwnerOrUser external returns (bool){
         require(_investor != address(0));
         require(_value > 0);
         require(transferInsEth[_investor].length < 31);
@@ -216,7 +216,7 @@ contract ContractStakeEth is Ownable {
         return this.balance;
     }
 
-    function withdrawETH(address _address) public returns (uint256){
+    function withdrawETH(address _address) onlyOwnerOrUser public returns (uint256){
         require(_address != address(0));
         uint256 _currentTime = now;
         _currentTime = 1525651200; // for test
@@ -257,9 +257,9 @@ contract ContractStakeEth is Ownable {
         return balancesETH[_owner];
     }
 
-    function cancel(uint256 _index, address _address) public returns (bool) {
+    function cancel(uint256 _index, address _address) onlyOwnerOrUser public returns (bool) {
         require(_index >= 0);
-        require(msg.sender != address(0));
+        require(_address != address(0));
         if(_address != arrayStakesETH[_index].owner){
             return false;
         }
@@ -267,7 +267,7 @@ contract ContractStakeEth is Ownable {
         return true;
     }
 
-    function changeRates(uint8 _numberRate, uint256 _percent) public returns (bool) {
+    function changeRates(uint8 _numberRate, uint256 _percent) onlyOwnerOrUser public returns (bool) {
         require(_percent >= 0);
         require(0 <= _numberRate && _numberRate < 3);
         rates[_numberRate] = _percent.add(100);
@@ -275,7 +275,7 @@ contract ContractStakeEth is Ownable {
 
     }
 
-    function getETHStakeByIndex(uint256 _index) public view returns (
+    function getETHStakeByIndex(uint256 _index) onlyOwnerOrUser public view returns (
         address _owner,
         uint256 _amount,
         TypeStake _stakeType,
@@ -290,7 +290,7 @@ contract ContractStakeEth is Ownable {
         _status = arrayStakesETH[_index].status;
     }
 
-    function getETHTransferInsByAddress(address _address, uint256 _index) public view returns (
+    function getETHTransferInsByAddress(address _address, uint256 _index) onlyOwnerOrUser public view returns (
         uint256 _indexStake,
         bool _isRipe
     ) {

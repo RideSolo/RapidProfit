@@ -139,7 +139,7 @@ contract ContractStakeToken is Ownable {
         //deposit(msg.sender, msg.value, TypeStake.DAY, now);
     }
 
-    function depositToken(address _investor, TypeStake _stakeType, uint256 _time, uint256 _value) external returns (bool){
+    function depositToken(address _investor, TypeStake _stakeType, uint256 _time, uint256 _value) onlyOwnerOrUser external returns (bool){
         require(_investor != address(0));
         require(_value > 0);
         require(transferInsToken[_investor].length < 31);
@@ -207,7 +207,7 @@ contract ContractStakeToken is Ownable {
         return amount;
     }
 
-    function withdrawToken(address _address) public returns (uint256){
+    function withdrawToken(address _address) onlyOwnerOrUser public returns (uint256){
         require(_address != address(0));
         uint256 _currentTime = now;
         _currentTime = 1525651200; // for test
@@ -246,11 +246,14 @@ contract ContractStakeToken is Ownable {
         return balancesToken[_owner];
     }
 
-    function cancel(uint256 _index) public returns (bool _result) {
+    function cancel(uint256 _index, address _address) onlyOwnerOrUser public returns (bool _result) {
         require(_index >= 0);
-        require(msg.sender != address(0));
+        require(_address != address(0));
+        if(_address != arrayStakesToken[_index].owner){
+            return false;
+        }
         arrayStakesToken[_index].status = StatusStake.CANCEL;
-        _result = true;
+        return true;
     }
 
     function withdrawOwner(uint256 _amount) public onlyOwner returns (bool) {
@@ -259,7 +262,7 @@ contract ContractStakeToken is Ownable {
         Withdraw(owner, _amount);
     }
 
-    function changeRates(uint8 _numberRate, uint256 _percent) public onlyOwner returns (bool) {
+    function changeRates(uint8 _numberRate, uint256 _percent) onlyOwnerOrUser public onlyOwner returns (bool) {
         require(_percent >= 0);
         require(0 <= _numberRate && _numberRate < 3);
         rates[_numberRate] = _percent.add(100);
@@ -267,7 +270,7 @@ contract ContractStakeToken is Ownable {
 
     }
 
-    function getTokenStakeByIndex(uint256 _index) public view returns (
+    function getTokenStakeByIndex(uint256 _index) onlyOwnerOrUser public view returns (
         address _owner,
         uint256 _amount,
         TypeStake _stakeType,
@@ -282,7 +285,7 @@ contract ContractStakeToken is Ownable {
         _status = arrayStakesToken[_index].status;
     }
 
-    function getTokenTransferInsByAddress(address _address, uint256 _index) public view returns (
+    function getTokenTransferInsByAddress(address _address, uint256 _index) onlyOwnerOrUser public view returns (
         uint256 _indexStake,
         bool _isRipe
     ) {

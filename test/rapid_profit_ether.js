@@ -21,7 +21,6 @@ contract('ContractStakeEth', (accounts) => {
 
 });
 
-/*
 contract('RapidProfit', (accounts) => {
     var owner = "0x250AF0D95B2C467234A3fEa315869FFE421Ca5c0";
     var TwoETH = 2*10**18;
@@ -42,9 +41,12 @@ contract('RapidProfit', (accounts) => {
 
     it('check set ContractStakeEth', async ()  => {
         await contractRP.setContractStakeEth(contractEth.address);
+        //console.log("contractRP.address = " + contractRP.address);
+
     });
 
     it('verification of ETH deposition', async ()  => {
+        await contractEth.setContractUser(contractRP.address, true, {from:accounts[0]});
         //deposit(address _investor, uint256 _amount, TypeStake _stakeType, uint256 _time)
         var currentTime = 1522800000; // Wed, 04 Apr 2018 00:00:00 GMT
         balanceAccountOneBefore = await contractRP.balanceOfETH(accounts[1]);
@@ -57,6 +59,7 @@ contract('RapidProfit', (accounts) => {
     });
 
     it('verification of ETH validWithdraw', async ()  => {
+        await contractEth.setContractUser(contractRP.address, true, {from:accounts[0]});
         var currentTime = 1522800000; // Wed, 04 Apr 2018 00:00:00 GMT
         balanceAccountOneBefore = await contractRP.balanceOfETH(accounts[1]);
         //await contractRP.depositETH(accounts[1], TwoETH, 1, currentTime, {from:accounts[0]});
@@ -185,4 +188,3 @@ contract('RapidProfit', (accounts) => {
         });
 
 });
-*/
