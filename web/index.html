@@ -6,9 +6,9 @@
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/jquery.csv.min.js"></script>
     <link rel="stylesheet" href="css/bootstrap.min.css"
-          integrity="sha256-xLbtJkVRnsLBKLrbKi53IAUvhEH/qUxPC87KAjEQBNo=" crossorigin="anonymous">
+          integrity="sha256-LA89z+k9fjgMKQ/kq4OO2Mrf8VltYml/VES+Rg0fh20=" crossorigin="anonymous">
     <script src="js/bootstrap.min.js"
-            integrity="sha256-QNIEYepLr01UnIFgBltbyB+MXOYCPXzk+TjzJwYJ7L0="
+            integrity="sha256-eZoFcnJ9Ooanw0yPsrZ3CHiXIYUBW+7/hNNqch50sLI="
             crossorigin="anonymous"></script>
     <style>
         ul {
@@ -17,7 +17,7 @@
             padding: 0;
         }
         body {
-            background: url(images/image_1.jpg);
+            background: url(images/1image_1.jpg);
             -moz-background-size: 100%; /* Firefox 3.6+ */
             -webkit-background-size: 100%; /* Safari 3.1+ и Chrome 4.0+ */
             -o-background-size: 100%; /* Opera 9.6+ */
@@ -26,6 +26,26 @@
         .footer {
             flex: 0 0 auto;
         }
+        .HStakeIt {
+            font-size: 2.35em;
+            font-weight: 600;
+            line-height: 0.8;
+        }
+        .rates {
+            font-size: 1.2em;
+            font-weight: 600;
+            line-height: 0.3;
+            font-family: Arial, serif;
+        }
+        .instructions {
+            font-size: 1.3em;
+            font-weight: 400;
+            #float:left;
+        }
+        .mybuttons {
+            font-size: 1.3em;
+            font-weight: 400;
+        }
     </style>
 </head>
 <body>
@@ -33,9 +53,53 @@
     <br><br>
     <div class="card">
         <div class="card-body">
-            <h3 class="text-xs-center">Airdrop/Bountu transfer
-                <small>token distribution system</small>
-            </h3>
+            <div class="row">
+                <div class="col-md-4 col-sm-4 col-lg-4">
+                    <img align="right" src="images/stakeit_200x200.png" width="110" height="110" alt="StakeIt">
+                </div>
+                <div class="col-md-4 col-sm-4 col-lg-4">
+                    <span class="HStakeIt">
+                        <p align="center"><font color="#fa8e47">STAKEIT TOKEN</font></p>
+                        <p align="center"><font color="#fa8e47">STAKING</font></p>
+                        <p align="center"><font color="#fa8e47">SMART CONTRACT</font></p>
+                    </span>
+                </div>
+                <div class="col-md-4 col-sm-4 col-lg-4">
+                    <img align="left" src="images/stakeit_200x200.png" width="110" height="110" alt="StakeIt">
+                </div>
+            </div>
+            <p></p>
+            <div class="row, rates">
+                <div class="col-md-12 col-sm-12 col-lg-12">
+                    <p align="center">CURRENT RATES ETHER: DAYLY (1%), WEEKLY (9%), MONTHLY (36%)</p>
+                    <p align="center">CURRENT RATES TOKEN: DAYLY (1%), WEEKLY (9%), MONTHLY (36%)</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-lg-12">
+                    <span>
+                    <p align="center">Rates are subject to change acoording to the changing values of STAKE</p>
+                    </span>
+                </div>
+            </div>
+            <div class="row, instructions">
+                <div class="col-md-4 col-sm-4 col-lg-4">
+                    <p align="center">1. Install MetaMask</p>
+                </div>
+                <div class="col-md-4 col-sm-4 col-lg-4">
+                    <p align="center">2. Deposit STAKE</p>
+                </div>
+                <div class="col-md-4 col-sm-4 col-lg-4">
+                    <p align="center">3. Wait for payouts</p>
+                </div>
+            </div>
+            <p></p>
+            <p></p>
+            <div class="row, mybuttons">
+                <span>
+                <p>QQQ</p>
+                </span>
+            </div>
             <div class="row">
                 <div class="col-md-8 col-sm-8 col-lg-8">
                     <div class="alert alert-success" id="divDappInfo">
@@ -56,92 +120,8 @@
                 <p></p>
             </div>
 
-            <div class="row">
-                <div class="col-md-4 col-sm-4 col-lg-4">
-                    <div class="card" style="width: 18rem;">
-                        <div class="card-body">
-                            <h6 class="card-subtitle mb-2 text-muted">Checking the sending of tokens to the specified address</h6>
-                            <p class="card-text">
-
-                            <p class="text-xs-left">Please enter a verifiable wallet address:</p>
-                            <input id="testAddress" class="form-control-sm" name="testAddress" value="" type="text" placeholder="Input address">
-                            <span> &nbsp;&nbsp; </span>
-                            <p></p>
-                            <button class="btn btn-primary btn-sm" id="checkAddress" onclick="checkAddress();">Check balance</button>
-                            <p></p>
-                            <p align="left" style="font-size: 10pt;">Balance of tokens at the address: <strong id="balanceTokens">0</strong> </p>
-                            <p align="left" style="font-size: 10pt;">Tokens were sent: <strong id="isSent">No</strong> </p>
-
-                            <p></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-4 col-lg-4">
-                    <div class="card" style="width: 18rem;">
-                        <div class="card-body">
-                            <h5 class="card-title">Basic information</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">Token transfer parameters.</h6>
-                            <h6 class="card-subtitle mb-2 text-muted">(no more than 80 tokens will be sent at once)</h6>
-                            <p class="card-text">
-                                Amount of addresses:
-                                <strong id="sendAdresses"></strong>
-                            <p></p>
-                            Amount of all tokens to sent:
-                            <strong id="sendTokens"></strong>
-                            <p></p>
-                            Number of packages to send:
-                            (1 package = 80 tokens)
-                            <strong id="numberTimes"></strong>
-                            <p></p>
-                            Last address of delivery:
-                            <strong id="lastAddress">0x0</strong>
-                            <p></p>
-                            Percentage of task completion
-                            <strong id="test">0%</strong>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-4 col-lg-4">
-                    <div class="card" style="width: 18rem;">
-                        <div class="card-body">
-                            <h5 class="card-title">Gas cost calculator</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">approximate calculation</h6>
-                            <p class="card-text">
-
-                            <p class="text-xs-left">Please enter the number of addresses:</p>
-                            <input id="numberAddress" class="form-control-sm" name="numberAddress" value="" type="text" placeholder="Input number of addresses">
-                            <span> &nbsp;&nbsp; </span>
-                            <p></p>
-                            <p class="text-xs-left">Please enter a Gas Price:</p>
-                            <input id="amountGwei" class="form-control-sm" name="amountGwei" value="" type="text" placeholder="Input amount of GWEI">
-                            <span> &nbsp;&nbsp; </span>
-                            <p></p>
-                            <button class="btn btn-primary btn-sm" id="checkCostGas" onclick="checkCostGas();">Calculate the cost</button>
-                            <p></p>
-                            <p align="left" class="text-small-left">Cost of transfer (ETH): <strong id="costTransfer">0</strong></p>
-                            <p></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-<p></p>
-            <div class="text-xs-center" id="example-caption-1">The progress of the transfer of tokens</div>
-            <div class="progress">
-                <div id="dynamic" class="progress-bar progress-bar-success progress-bar-striped progress-bar-animated active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-                    <span id="current-progress"></span>
-                </div>
-            </div>
-            <p></p>
-            <div class="row">
-                <div class="col-md-4 col-sm-4 col-lg-4">
-                    <button class="btn btn-warning btn-sm" id="voting" onclick="batchTransfer();">Send tokens</button>
-                </div>
-                <div class="col-md-4 col-sm-4 col-lg-4">
-                    <button class="btn btn-success btn-sm" id="reset" onclick="resetting();">Reset result</button>
-                </div>
-            </div>
-
         </div>
+
     </div>
 </div>
 <footer >

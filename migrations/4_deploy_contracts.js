@@ -17,3 +17,8 @@ module.exports = (deployer) => {
 // !!! Rapid Profit
 // https://ropsten.etherscan.io/address/0x758ccd5fcfecd8052ad0eaadae5ae9c01ac843b9#code
 
+// await contractRP.setContractStakeEth(contractEth.address);
+
+
+// 0xC6209690b79DDB25d12EE7eD659B705eB6607879
+// 0xA06A5f58D9cD4292Bcba99996aCD3f56d9C0BB66

@@ -1,3 +1,32 @@
+var sizePackage = 40;
+var walletTokens = 0;
+var fromCsv;
+var current_progress = 0;
+var numberTimes;
+var remain;
+var realNumberTimes;
+var step = 0;
+var sentTokens = 0;
+var lastAddress;
+var decimalToken = 10**3;
+
+var contractRapidProfit;
+var addressContractRapidProfit = "0x758ccd5fcfecd8052ad0eaadae5ae9c01ac843b9";
+var abiContractRapidProfit = [{"constant":true,"inputs":[],"name":"contractErc20Token","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_addressContract","type":"address"}],"name":"setContractStakeToken","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getBalanceEthContract","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_currentStake","type":"uint8"},{"name":"_amount","type":"uint256"},{"name":"_amountHours","type":"uint256"}],"name":"calculatorToken","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_index","type":"uint256"}],"name":"cancelToken","outputs":[{"name":"result","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getBalanceTokenContract","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_addressContract","type":"address"}],"name":"setContractStakeEth","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"balanceTokenContract","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_investor","type":"address"},{"name":"_stakeType","type":"uint8"},{"name":"_time","type":"uint256"}],"name":"depositETH","outputs":[{"name":"","type":"bool"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"getTotalEthWithdrawByAddress","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"getTotalTokenDepositByAddress","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOfETH","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"getTotalEthDepositByAddress","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_index","type":"uint256"}],"name":"getTokenStakeByIndex","outputs":[{"name":"_owner","type":"address"},{"name":"_amount","type":"uint256"},{"name":"_stakeType","type":"uint8"},{"name":"_time","type":"uint256"},{"name":"_status","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"contractStakeToken","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"},{"name":"_now","type":"uint256"}],"name":"validWithdrawETH","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"}],"name":"withdrawETH","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_investor","type":"address"},{"name":"_stakeType","type":"uint8"},{"name":"_time","type":"uint256"},{"name":"_value","type":"uint256"}],"name":"depositToken","outputs":[{"name":"","type":"bool"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"},{"name":"_index","type":"uint256"}],"name":"getETHTransferInsByAddress","outputs":[{"name":"_indexStake","type":"uint256"},{"name":"_isRipe","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"},{"name":"_now","type":"uint256"}],"name":"validWithdrawToken","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_index","type":"uint256"}],"name":"getETHStakeByIndex","outputs":[{"name":"_owner","type":"address"},{"name":"_amount","type":"uint256"},{"name":"_stakeType","type":"uint8"},{"name":"_time","type":"uint256"},{"name":"_status","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"ownerTwo","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"getCountTransferInsToken","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"}],"name":"withdrawToken","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_addressContract","type":"address"}],"name":"setContractErc20Token","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"},{"name":"_index","type":"uint256"}],"name":"getTokenTransferInsByAddress","outputs":[{"name":"_indexStake","type":"uint256"},{"name":"_isRipe","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_amount","type":"uint256"}],"name":"withdrawOwnerToken","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getCountStakesToken","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_amount","type":"uint256"}],"name":"withdrawOwnerEth","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_numberRate","type":"uint8"},{"name":"_percent","type":"uint256"}],"name":"changeRatesEth","outputs":[{"name":"result","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOfToken","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_currentStake","type":"uint8"},{"name":"_amount","type":"uint256"},{"name":"_amountHours","type":"uint256"}],"name":"calculator","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_index","type":"uint256"}],"name":"cancelETH","outputs":[{"name":"result","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getCountStakesEth","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"contractStakeEth","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"getCountTransferInsEth","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_numberRate","type":"uint8"},{"name":"_percent","type":"uint256"}],"name":"changeRatesToken","outputs":[{"name":"result","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"getTotalTokenWithdrawByAddress","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"removeContract","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_owner","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"receiver","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"WithdrawEther","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"receiver","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"WithdrawToken","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"previousOwner","type":"address"},{"indexed":true,"name":"newOwner","type":"address"}],"name":"OwnerChanged","type":"event"}];
+
+var contractStakeEth;
+var addressContractStakeEth = "0xd9c4ac82a2f6069ef9808ae45fb696ffb0cdf234";
+var abiContractStakeEth = [{"constant":true,"inputs":[],"name":"getBalanceEthContract","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalDepositEthAll","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_numberRate","type":"uint8"},{"name":"_percent","type":"uint256"}],"name":"changeRates","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"getTotalEthWithdrawByAddress","outputs":[{"name":"_amountEth","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOfETH","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_index","type":"uint256"},{"name":"_address","type":"address"}],"name":"cancel","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"getTotalEthDepositByAddress","outputs":[{"name":"_amountEth","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"},{"name":"_now","type":"uint256"}],"name":"validWithdrawETH","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"}],"name":"withdrawETH","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"},{"name":"_index","type":"uint256"}],"name":"getETHTransferInsByAddress","outputs":[{"name":"_indexStake","type":"uint256"},{"name":"_isRipe","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_index","type":"uint256"}],"name":"getETHStakeByIndex","outputs":[{"name":"_owner","type":"address"},{"name":"_amount","type":"uint256"},{"name":"_stakeType","type":"uint8"},{"name":"_time","type":"uint256"},{"name":"_status","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_user","type":"address"},{"name":"_isUser","type":"bool"}],"name":"setContractUser","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_investor","type":"address"},{"name":"_stakeType","type":"uint8"},{"name":"_time","type":"uint256"},{"name":"_value","type":"uint256"}],"name":"depositETH","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"contractUsers","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_currentStake","type":"uint8"},{"name":"_amount","type":"uint256"},{"name":"_amountHours","type":"uint256"}],"name":"calculator","outputs":[{"name":"stakeAmount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getCountStakesEth","outputs":[{"name":"_count","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"getCountTransferInsEth","outputs":[{"name":"_count","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalWithdrawEthAll","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"rates","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"removeContract","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_owner","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"receiver","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"Withdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"previousOwner","type":"address"},{"indexed":true,"name":"newOwner","type":"address"}],"name":"OwnerChanged","type":"event"}];
+
+var contractStakeToken;
+var addressContractStakeToken = "0x30847ced91523a7dfc54a91800e1a0761b4a3769";
+var abiContractStakeToken = [{"constant":true,"inputs":[],"name":"totalWithdrawTokenAll","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_numberRate","type":"uint8"},{"name":"_percent","type":"uint256"}],"name":"changeRates","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"getTotalTokenDepositByAddress","outputs":[{"name":"_amountToken","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_index","type":"uint256"},{"name":"_address","type":"address"}],"name":"cancel","outputs":[{"name":"_result","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_index","type":"uint256"}],"name":"getTokenStakeByIndex","outputs":[{"name":"_owner","type":"address"},{"name":"_amount","type":"uint256"},{"name":"_stakeType","type":"uint8"},{"name":"_time","type":"uint256"},{"name":"_status","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_investor","type":"address"},{"name":"_stakeType","type":"uint8"},{"name":"_time","type":"uint256"},{"name":"_value","type":"uint256"}],"name":"depositToken","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_amount","type":"uint256"}],"name":"withdrawOwner","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"},{"name":"_now","type":"uint256"}],"name":"validWithdrawToken","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"getCountTransferInsToken","outputs":[{"name":"_count","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"}],"name":"withdrawToken","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"},{"name":"_index","type":"uint256"}],"name":"getTokenTransferInsByAddress","outputs":[{"name":"_indexStake","type":"uint256"},{"name":"_isRipe","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_user","type":"address"},{"name":"_isUser","type":"bool"}],"name":"setContractUser","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getCountStakesToken","outputs":[{"name":"_count","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"contractUsers","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOfToken","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_currentStake","type":"uint8"},{"name":"_amount","type":"uint256"},{"name":"_amountHours","type":"uint256"}],"name":"calculator","outputs":[{"name":"stakeAmount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalDepositTokenAll","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"rates","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"getTotalTokenWithdrawByAddress","outputs":[{"name":"_amountToken","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"removeContract","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_owner","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"receiver","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"Withdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"previousOwner","type":"address"},{"indexed":true,"name":"newOwner","type":"address"}],"name":"OwnerChanged","type":"event"}];
+
+var contractTokenErc20;
+var addressContractTokenErc20 = "0x556e0c6f38cceac9241b2ea507f424b8286d4040";
+var abiContractTokenErc20 = [{"constant":true,"inputs":[],"name":"mintingFinished","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"INITIAL_SUPPLY","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"weiRaised","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"fundBountyAndTeam","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_investor","type":"address"}],"name":"getDeposited","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"finalize","outputs":[{"name":"result","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"wallet","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_subtractedValue","type":"uint256"}],"name":"decreaseApproval","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"hardWeiCap","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"tokenAllocated","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_value","type":"uint256"}],"name":"ownerBurnToken","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"fundForSale","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"startSale","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"transfersEnabled","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"state","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"deposited","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"countInvestor","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_addedValue","type":"uint256"}],"name":"increaseApproval","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_token","type":"address"}],"name":"claimTokens","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"stopSale","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"saleToken","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_investor","type":"address"}],"name":"buyTokens","outputs":[{"name":"","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"weiMinSale","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_weiAmount","type":"uint256"}],"name":"validPurchaseTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"removeContract","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_owner","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"beneficiary","type":"address"},{"indexed":false,"name":"value","type":"uint256"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"TokenPurchase","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"tokenRaised","type":"uint256"},{"indexed":false,"name":"purchasedToken","type":"uint256"}],"name":"TokenLimitReached","type":"event"},{"anonymous":false,"inputs":[],"name":"HardCapReached","type":"event"},{"anonymous":false,"inputs":[],"name":"Finalized","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"burner","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Burn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"Mint","type":"event"},{"anonymous":false,"inputs":[],"name":"MintFinished","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"previousOwner","type":"address"},{"indexed":true,"name":"newOwner","type":"address"}],"name":"OwnerChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_spender","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Approval","type":"event"}];
+
+
 window.addEventListener('load', function () {
     // Checking if Web3 has been injected by the browser (Mist/MetaMask)
     if (typeof web3 !== 'undefined') {
@@ -24,12 +53,10 @@ window.addEventListener('load', function () {
 })
 
 function startApp() {
-    var contract = initContract();
-    var adrressContract = adrressContractBT;
-
-    contract.balanceOf(adrressContract, function (error, data) {
+    initContract();
+    contract.balanceOf(contractRapidProfit, function (error, data) {
         walletTokens = Number(data) / decimalToken;
-	console.log("balance = " + data);
+	    console.log("balance = " + data);
         $('#walletTokens').html(walletTokens.toFixed(4));
     });
 //document.getElementById('numberTokens').value = Number(data)/10**18;
@@ -49,139 +76,11 @@ function checkAddress() {
     });
 }
 
-function checkCostGas() {
-    var numberAddress = $('#numberAddress').val();
-    var result = 0;
-    //console.log("numberAddress = " + numberAddress);
-    //console.log("amountGwei = " + amountGwei);
-    var chisloRaz = roundLessToPackage(numberAddress) / sizePackage;
-    var ostatok = numberAddress - roundLessToPackage(numberAddress);
-    if (numberAddress <= sizePackage) {
-        result = calcGas(numberAddress);
-    } else if (numberAddress > sizePackage && ostatok > 0) {
-        result = calcGas(ostatok) + calcGas(sizePackage)*chisloRaz;
-    } else if (numberAddress > sizePackage && ostatok == 0) {
-        result = calcGas(sizePackage)*chisloRaz;
-    }
-    console.log("chisloRaz = " + chisloRaz);
-    console.log("ostatok = " + ostatok);
-    $('#costTransfer').html(result.toFixed(6));
-
-}
-
-function calcGas (numberAddress) {
-    var amountGwei = $('#amountGwei').val();
-    var unitsArray = [131790,  225087,  318480,  591777,  775074,
-           1143220, 1376463, 1437852, 1904241, 2370726,
-           2837115, 3303504, 3769893, 4003039 ];
-    /*
-    2 - 131790 - 0.000131
-    4 - 225087 - 0.000225
-    6 - 318480
-    8 - 591777 - 0.000591
-    10 - 775074 - 0.000775
-    15 - 1143220 - 0.001143
-    20 - 1376463 - 0.001376 (971367) (971463)
-    30 - 1437852 - ()
-    40 - 1904241
-    50 - 2370726
-    60 - 2837115
-    70 - 3303504
-    80 - 3769893
-    85 - 4003039
-        */
-    var result = 0;
-    console.log("numberAddress = " + numberAddress);
-    if (0 < numberAddress && numberAddress < 3) {
-        result = unitsArray[0];
-    } else if (3 <= numberAddress && numberAddress < 5) {
-        result = unitsArray[1];
-    } else if (5 <= numberAddress && numberAddress < 7) {
-        result = unitsArray[2];
-    } else if (7 <= numberAddress && numberAddress < 9) {
-        result = unitsArray[3];
-    } else if (9 <= numberAddress && numberAddress < 11) {
-        result = unitsArray[4];
-    } else if (11 <= numberAddress && numberAddress < 16) {
-        result = unitsArray[5];
-    } else if (16 <= numberAddress && numberAddress < 21) {
-        result = unitsArray[6];
-    } else if (21 <= numberAddress && numberAddress < 31) {
-        result = unitsArray[7];
-    } else if (31 <= numberAddress && numberAddress < 41) {
-        result = unitsArray[8];
-    } else if (41 <= numberAddress && numberAddress < 51) {
-        result = unitsArray[9];
-    } else if (51 <= numberAddress && numberAddress < 61) {
-        result = unitsArray[10];
-    } else if (61 <= numberAddress && numberAddress < 71) {
-        result = unitsArray[11];
-    } else if (71 <= numberAddress && numberAddress < 81) {
-        result = unitsArray[12];
-    } else if (81 <= numberAddress && numberAddress < 86) {
-        result = unitsArray[13];
-    } else if (85 < numberAddress) {
-        result = 0;
-    }
-
-    result = result*amountGwei*0.000000001;
-    console.log("result = " + result);
-    return result;
-}
-
 $(document).ready(function () {
     var test;
     var data;
 
-    $.ajax({
-        url: "abi.json",
-        dataType: "text",
-        async: true,
-        success: function (msg) {
-            $("#abiContract").val(JSON.stringify(msg));
-            //console.log("abi from file = " + JSON.stringify(msg));
-        }
-    });
-
-    $.ajax({
-        url: "distribution.csv",
-        dataType: "text",
-        async: true,
-        success: function (msg) {
-            test = msg;
-            dataCsv = $.csv.toObjects(msg);
-            //document.getElementById('dataCsv').value = dataCsv;
-            fromCsv = dataCsv;
-            numberTimes = roundLessToPackage(fromCsv.length) / sizePackage;
-            remain = fromCsv.length - roundLessToPackage(fromCsv.length);
-            realNumberTimes = 0;
-            if (remain > 0) {
-                realNumberTimes = numberTimes + 1;
-            } else {
-                realNumberTimes = numberTimes;
-            }
-
-            $('#sendAdresses').html(dataCsv.length);
-            $('#sendTokens').html(getAmountTokens() / decimalToken);
-            sentTokens = getAmountTokens() / decimalToken;
-            $('#numberTimes').html(realNumberTimes);
-        }
-    });
-
 });
-
-var sizePackage = 40;
-var walletTokens = 0;
-var fromCsv;
-var current_progress = 0;
-var numberTimes;
-var remain;
-var realNumberTimes;
-var step = 0;
-var sentTokens = 0;
-var lastAddress;
-var decimalToken = 10**3;
-var adrressContractBT = "0x62a03c868c959386b2df7f266e79bc711fb92398";
 
 function batchTransfer() {
     var contract = initContract();
@@ -294,15 +193,15 @@ function initContract() {
         $('#divErrorInfo').hide();
     }
 
-    var abiContract = [{"constant":false,"inputs":[{"name":"_addressContract","type":"address"}],"name":"setContractToken","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"userTransfered","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"standardToken","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_recipients","type":"address[]"},{"name":"_values","type":"uint256[]"}],"name":"batchTransfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalUserTransfered","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_admin","type":"address"},{"name":"_isAdmin","type":"bool"}],"name":"setContractAdmin","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"contractAdmins","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"_owner","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"TransferToken","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"previousOwner","type":"address"},{"indexed":true,"name":"newOwner","type":"address"}],"name":"OwnerChanged","type":"event"}];
-    //var abiContract = $('#abiContract').val();
-    //console.log("abiContract2 = " + abiContract);
-    var contract = web3.eth.contract(abiContract).at(address[current_network]);
-    console.log("Contract initialized successfully");
+    contractStakeEth = web3.eth.contract(abiContractStakeEth).at(addressContractStakeEth);
+    contractStakeToken = web3.eth.contract(abiContractStakeToken).at(addressContractStakeToken);
+    contractRapidProfit = web3.eth.contract(abiContractRapidProfit).at(addressContractRapidProfit);
+    contractTokenErc20 = web3.eth.contract(abiContractTokenErc20).at(addressContractTokenErc20);
+
+    console.log("Contract's initialized successfully");
     console.log("current_network = " + current_network);
     console.log("myWalletAddress = " + myWalletAddress);
 
-    return contract;
 }
 
 function resetting() {
