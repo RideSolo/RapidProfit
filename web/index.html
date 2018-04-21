@@ -2,14 +2,12 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>DApp super</title>
+    <title>STYKE deposit</title>
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/jquery.csv.min.js"></script>
-    <link rel="stylesheet" href="css/bootstrap.min.css"
-          integrity="sha256-LA89z+k9fjgMKQ/kq4OO2Mrf8VltYml/VES+Rg0fh20=" crossorigin="anonymous">
-    <script src="js/bootstrap.min.js"
-            integrity="sha256-eZoFcnJ9Ooanw0yPsrZ3CHiXIYUBW+7/hNNqch50sLI="
-            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
     <style>
         ul {
             list-style-type: none;
@@ -17,7 +15,7 @@
             padding: 0;
         }
         body {
-            background: url(images/1image_1.jpg);
+            background: url(images/image_1.jpg);
             -moz-background-size: 100%; /* Firefox 3.6+ */
             -webkit-background-size: 100%; /* Safari 3.1+ и Chrome 4.0+ */
             -o-background-size: 100%; /* Opera 9.6+ */
@@ -25,6 +23,28 @@
         }
         .footer {
             flex: 0 0 auto;
+        }
+        .parent {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            top: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            align-content: center;
+            justify-content: center;
+            #overflow: auto;
+        }
+        .block {
+            background: #343a40;
+            color: white;
+            min-height: min-content;
+
+        img {
+                display: block;
+                border: none;
+            }
         }
         .HStakeIt {
             font-size: 2.35em;
@@ -51,9 +71,77 @@
             font-weight: 300;
             line-height: 0.4;
         }
+        .textTables {
+            color: white;
+            #font-size: 0.8em;
+            font-weight: 600;
+            #line-height: 0.4;
+        }
+        .blockAdminPanel {
+            height: 230px;
+            width: 500px;
+            background: #343a40;
+            display: block;
+            font-weight: 600;
+            line-height: 0.4;
+        }
+        .blockButtons {
+            height: 230px;
+            width: 500px;
+            background: #343a40;
+            display: block;
+        }
+        .depositButton {
+            display: block;
+            background: #5a6268;
+            height: 50px;
+            width: 450px;
+            float: left;
+        }
+        .depositButtonText{
+            position: relative;
+            display: block;
+            left: 20px;
+            top: 10px;
+            color: white;
+            font-weight: 600;
+            line-height: 0.3;
+            font-family: Arial, serif;
+        }
+        .depositButtonImage{
+            position: relative;
+            display: block;
+            left: -10px;
+            bottom: 36px;
+
+        }
+        .adminFunctions {
+            display: block;;
+        }
+        a {text-decoration: underline; color: #0056b3;}
+        a:hover {text-decoration: none; color: #c82333;}
+
+        /* For table */
+/*        tr {
+            width: 100%;
+            display: inline-table;
+            table-layout: fixed;
+        }
+        table{
+            height:300px;
+            display: -moz-groupbox;
+        }
+        tbody{
+            overflow-y: scroll;
+            height: 200px;
+            width: 100%;
+            position: absolute;
+        }
+*/
     </style>
 </head>
 <body>
+
 <div class="container">
     <br><br>
     <div class="card">
@@ -99,38 +187,264 @@
                 </div>
             </div>
             <p></p>
-            <p></p>
-            <div class="row">
-                <div class="col-md-2 col-sm-2 col-lg-2">
-                </div>
-                <div class="col-md-8 col-sm-8 col-lg-8">
-                    <div class="card" style="width: 45rem; height: 20rem;">
-                        <img class="card-img" src="images/fon.jpg" alt="Card image cap">
-                        <h5 class="card-text">Card title</h5>
-                        <div class="card-body">
-                            <ul class="list-group list-group-flush, textButtons">
-                                <li class="list-group-item">
-                                    <p>(DAYLY 24 HOURS)</p>
-                                    <p>CURRENT RATE: 1%</p>
-                                </li>
-                                <li class="list-group-item">
-                                    <p>(WEEKLY 168 HOURS)</p>
-                                    <p>CURRENT RATE: 9%</p>
-                                </li>
-                                <li class="list-group-item">
-                                    <p>(MONTHLY 730 HOURS)</p>
-                                    <p>CURRENT RATE: 36%</p>
-                                </li>
-                            </ul>
+            <p></p><p></p>
+            <div align="center" class="row" style="color: #ffffff">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <div class="parent">
+                        <div class="block">
+                            <div class="blockAdminPanel">
+                                <h4>Administrator functions</h4>
+                                <p>The smart contract currently contains:</p>
+                                <p><strong id="totalStake">498987.343430</strong> STAKE</p>
+                                <p><strong id="totalEth">498987.343430</strong> ETH</p>
+                                <p>CHANGE RATES:</p>
+                                <p><a onclick="changeRateDayly()" href="#">DAYLY</a>&nbsp;&nbsp;&nbsp;<a onclick="changeRateWeekly()" href="#">WEEKLY</a>&nbsp;&nbsp;&nbsp;<a onclick="changeRateMonthly()" href="#">MONTHLY</a></p>
+                                <p><a onclick="depositEth()" href="#">Deposit ETH</a>&nbsp;&nbsp;&nbsp;<a onclick="withdrawEth()" href="#">Withdraw ETH</a></p>
+                                <p><a onclick="depositToken()" href="#">Deposit STAKE</a>&nbsp;&nbsp;&nbsp;<a onclick="withdrawToken()" href="#">Withdraw STAKE</a></p>
+                                <br>
+                                <p><a onclick="transferOwner()" href="#">Transfer ownership</a></p>
+                            </div>
                         </div>
-                        <img class="card-img-bottom" src="images/fon.jpg" alt="Card image cap">
                     </div>
                 </div>
-                <div class="col-md-2 col-sm-2 col-lg-2">
-                </div>
+                <div class="col-2"></div>
+            </div> <!-- end row-->
+            <p></p><p></p>
 
-            </div>
             <p></p>
+            <p></p>
+            <div class="row">
+                <div class="col-2"></div>
+                <div class="col-8" style="font-weight: 600;">
+                    <div class="parent">
+                        <div class="block">
+                            <h4 align="center">DEPOSIT</h4>
+                            <br>
+                                <!-- Nav tabs -->
+                                <ul class="nav nav-tabs" role="tablist">
+                                    <li class="nav-item" style="background-color: #343a40;">
+                                        <a class="nav-link active" data-toggle="tab" href="#home">STAKE</a>
+                                    </li>
+                                    <li class="nav-item" style="background-color: #343a40;">
+                                        <a class="nav-link" data-toggle="tab" href="#menu1">ETH</a>
+                                    </li>
+                                </ul>
+
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div id="home" class="container tab-pane active"><br>
+                                        <p></p>
+                                        <p align="center">You have 3929.37 STAKE</p>
+                                        <p></p>
+                                        <div class="blockButtons">
+                                            <ul class="list-group list-group-flush, textButtons">
+                                                <li class="list-group-item" style="background: #343a40;">
+                                                    <a onclick="userDepositDaylyToken()" href="#">
+                                                        <div class="depositButton">
+                                                            <div class="depositButtonText">
+                                                                <p>(DAYLY 24 HOURS)</p>
+                                                                <p>CURRENT RATE: 1%</p>
+                                                            </div>
+                                                            <div class="depositButtonImage">
+                                                                <img align="right" src="images/depositButton.jpg" width="170" height="42" alt="StakeIt">
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                                <li class="list-group-item" style="background: #343a40;">
+                                                    <a onclick="userDepositWeeklyToken()" href="#">
+                                                        <div class="depositButton">
+                                                            <div class="depositButtonText">
+                                                                <p>(WEEKLY 168 HOURS)</p>
+                                                                <p>CURRENT RATE: 9%</p>
+                                                            </div>
+                                                            <div class="depositButtonImage">
+                                                                <img align="right" src="images/depositButton.jpg" width="170" height="42" alt="StakeIt">
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                                <li class="list-group-item" style="background: #343a40;">
+                                                    <a onclick="userDepositMonthlyToken()" href="#">
+                                                        <div class="depositButton">
+                                                            <div class="depositButtonText">
+                                                                <p>(MONTHLY 730 HOURS)</p>
+                                                                <p>CURRENT RATE: 36%</p>
+                                                            </div>
+                                                            <div class="depositButtonImage">
+                                                                <img align="right" src="images/depositButton.jpg" width="170" height="42" alt="StakeIt">
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div> <!-- end home -->
+
+                                    <div id="menu1" class="container tab-pane fade"><br>
+                                        <p></p>
+                                        <p align="center">You have 3929.37 ETH</p>
+                                        <p></p>
+                                        <div class="blockButtons">
+                                            <ul class="list-group list-group-flush, textButtons">
+                                                <li class="list-group-item" style="background: #343a40;">
+                                                    <a onclick="userDepositDaylyEth()" href="#">
+                                                        <div class="depositButton">
+                                                            <div class="depositButtonText">
+                                                                <p>(DAYLY 24 HOURS)</p>
+                                                                <p>CURRENT RATE: 1%</p>
+                                                            </div>
+                                                            <div class="depositButtonImage">
+                                                                <img align="right" src="images/depositButton.jpg" width="170" height="42" alt="StakeIt">
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                                <li class="list-group-item" style="background: #343a40;">
+                                                    <a onclick="userDepositWeeklyEth()" href="#">
+                                                        <div class="depositButton">
+                                                            <div class="depositButtonText">
+                                                                <p>(WEEKLY 168 HOURS)</p>
+                                                                <p>CURRENT RATE: 9%</p>
+                                                            </div>
+                                                            <div class="depositButtonImage">
+                                                                <img align="right" src="images/depositButton.jpg" width="170" height="42" alt="StakeIt">
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                                <li class="list-group-item" style="background: #343a40;">
+                                                    <a onclick="userDepositMonthlyEth()" href="#">
+                                                        <div class="depositButton">
+                                                            <div class="depositButtonText">
+                                                                <p>(MONTHLY 730 HOURS)</p>
+                                                                <p>CURRENT RATE: 36%</p>
+                                                            </div>
+                                                            <div class="depositButtonImage">
+                                                                <img align="right" src="images/depositButton.jpg" width="170" height="42" alt="StakeIt">
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                            </ul>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                        </div> <!-- end block -->
+                    </div>
+                </div>
+                <div class="col-2"></div>
+            </div> <!-- end row-->
+            <p></p><p></p>
+
+
+            <div class="row">
+                <div class="col-2"></div>
+                <div class="col-8" style="font-weight: 600;">
+                    <div class="parent">
+                        <div class="block">
+                            <h4 align="center">DASHBOARD</h4>
+                            <br>
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item" style="background-color: #343a40;">
+                                    <a class="nav-link active" data-toggle="tab" href="#home">MY PLANS</a>
+                                </li>
+                                <li class="nav-item" style="background-color: #343a40;">
+                                    <a class="nav-link" data-toggle="tab" href="#menu1">ALL PLANS</a>
+                                </li>
+                            </ul>
+
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div id="home" class="container tab-pane active"><br>
+                                    <h3>MY PLANS</h3>
+                                    <table class="table table-dark table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th>Address</th>
+                                            <th>Amount</th>
+                                            <th>Type</th>
+                                            <th>Time</th>
+                                            <th>Status</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>John</td>
+                                            <td>10.938221</td>
+                                            <td>john@example.com</td>
+                                            <td>John</td>
+                                            <td>Doe</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Mary</td>
+                                            <td>Moe</td>
+                                            <td>mary@example.com</td>
+                                            <td>John</td>
+                                            <td>Doe</td>
+                                        </tr>
+                                        <tr>
+                                            <td>July</td>
+                                            <td>Dooley</td>
+                                            <td>july@example.com</td>
+                                            <td>John</td>
+                                            <td>Doe</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="menu1" class="container tab-pane fade"><br>
+                                    <h3>ALL PLANS</h3>
+                                    <table class="table table-dark table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th>Address</th>
+                                            <th>Amount</th>
+                                            <th>Type</th>
+                                            <th>Time</th>
+                                            <th>Status</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>John</td>
+                                            <td>10.938221</td>
+                                            <td>john@example.com</td>
+                                            <td>John</td>
+                                            <td>Doe</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Mary</td>
+                                            <td>Moe</td>
+                                            <td>mary@example.com</td>
+                                            <td>John</td>
+                                            <td>Doe</td>
+                                        </tr>
+                                        <tr>
+                                            <td>July</td>
+                                            <td>Dooley</td>
+                                            <td>july@example.com</td>
+                                            <td>John</td>
+                                            <td>Doe</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div> <!-- end block -->
+                    </div>
+                </div>
+                <div class="col-2"></div>
+            </div> <!-- end row-->
+<p></p><p></p>
+
             <div class="row">
                 <div class="col-md-8 col-sm-8 col-lg-8">
                     <div class="alert alert-success" id="divDappInfo">

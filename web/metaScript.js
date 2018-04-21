@@ -1,5 +1,6 @@
 var sizePackage = 40;
 var walletTokens = 0;
+var walletEth = 0;
 var fromCsv;
 var current_progress = 0;
 var numberTimes;
@@ -8,7 +9,7 @@ var realNumberTimes;
 var step = 0;
 var sentTokens = 0;
 var lastAddress;
-var decimalToken = 10**3;
+var decimalToken = 10**8;
 
 var contractRapidProfit;
 var addressContractRapidProfit = "0x758ccd5fcfecd8052ad0eaadae5ae9c01ac843b9";
@@ -54,11 +55,17 @@ window.addEventListener('load', function () {
 
 function startApp() {
     initContract();
-    contract.balanceOf(contractRapidProfit, function (error, data) {
+    contractTokenErc20.balanceOf(addressContractRapidProfit, function (error, data) {
         walletTokens = Number(data) / decimalToken;
-	    console.log("balance = " + data);
-        $('#walletTokens').html(walletTokens.toFixed(4));
+	    console.log("totalStake = " + data);
+        $('#totalStake').html(walletTokens.toFixed(4));
     });
+    contractRapidProfit.getBalanceEthContract(function (error, data) {
+        walletEth = Number(data) / decimalToken;
+        console.log("totalEth = " + data);
+        $('#totalEth').html(walletEth.toFixed(4));
+    });
+
 //document.getElementById('numberTokens').value = Number(data)/10**18;
 }
 
@@ -81,6 +88,50 @@ $(document).ready(function () {
     var data;
 
 });
+
+function changeRateDayly() {
+    console.log("changeRateDayly");
+}
+
+function changeRateWeekly() {
+    console.log("changeRateWeekly");
+}
+
+function changeRateMonthly() {
+    console.log("changeRateMonthly");
+}
+
+function depositEth() {
+    console.log("depositEth");
+}
+
+function withdrawEth() {
+    console.log("withdrawEth");
+}
+
+function depositToken() {
+    console.log("depositToken");
+}
+
+function withdrawToken() {
+    console.log("withdrawToken");
+}
+
+function transferOwner() {
+    console.log("transferOwner");
+}
+
+function userDepositDaylyToken() {
+    console.log("userDepositDaylyToken");
+}
+
+function userDepositWeeklyToken() {
+    console.log("userDepositWeeklyToken");
+}
+
+function userDepositMonthlyToken() {
+    console.log("userDepositMonthlyToken");
+}
 
 function batchTransfer() {
     var contract = initContract();
@@ -180,9 +231,6 @@ function convertCsvToValue(position, numberValues) {
 }
 
 function initContract() {
-    var address = {
-        "1": adrressContractBT // Ropsten
-    }
     var current_network = web3.version.network;
     var myWalletAddress = web3.eth.accounts[0];
     if (myWalletAddress == undefined) {
