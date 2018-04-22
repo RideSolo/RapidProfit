@@ -1,6 +1,9 @@
 var sizePackage = 40;
 var walletTokens = 0;
 var walletEth = 0;
+var rateDayly = 0;
+var rateWeekly = 0;
+var rateMonthly = 0;
 var fromCsv;
 var step = 0;
 var sentTokens = 0;
@@ -58,6 +61,19 @@ function startApp() {
         walletEth = Number(data) / decimalToken;
         $('#totalEth').html(walletEth.toFixed(4));
     });
+    contractStakeToken.rates(0, function (error, data) {
+        rateDayly = data - 100;
+        $('#ratesDayly').html(rateDayly.toFixed(0));
+    });
+    contractStakeToken.rates(1, function (error, data) {
+        rateWeekly = data - 100;
+        $('#ratesWeekly').html(rateWeekly.toFixed(0));
+    });
+    contractStakeToken.rates(2, function (error, data) {
+        rateMonthly = data - 100;
+        $('#ratesMonthly').html(rateMonthly.toFixed(0));
+    });
+
 }
 
 function makeTableMyPlans() {
