@@ -2,14 +2,9 @@ var sizePackage = 40;
 var walletTokens = 0;
 var walletEth = 0;
 var fromCsv;
-var current_progress = 0;
-var numberTimes;
-var remain;
-var realNumberTimes;
 var step = 0;
 var sentTokens = 0;
-var lastAddress;
-var decimalToken = 10**8;
+var decimalToken = Number(10**18);
 
 var contractRapidProfit;
 var addressContractRapidProfit = "0x758ccd5fcfecd8052ad0eaadae5ae9c01ac843b9";
@@ -57,16 +52,101 @@ function startApp() {
     initContract();
     contractTokenErc20.balanceOf(addressContractRapidProfit, function (error, data) {
         walletTokens = Number(data) / decimalToken;
-	    console.log("totalStake = " + data);
         $('#totalStake').html(walletTokens.toFixed(4));
     });
     contractRapidProfit.getBalanceEthContract(function (error, data) {
         walletEth = Number(data) / decimalToken;
-        console.log("totalEth = " + data);
         $('#totalEth').html(walletEth.toFixed(4));
     });
+}
 
-//document.getElementById('numberTokens').value = Number(data)/10**18;
+function makeTableMyPlans() {
+    var walletAddress = web3.eth.accounts[0];
+    var numberTransferIns = 0;
+    var currTransferIns;
+    var arrayStakes = [];
+    var currentStake;
+    var indexStake = 0;
+    console.log("makeTableMyPlans ...");
+    contractRapidProfit.getCountTransferInsToken(walletAddress, function (error, data) {
+        numberTransferIns = data;
+        arrayStakes = [];
+        for (var j = 0; j < numberTransferIns; j++) {
+            indexStake = numberTransferIns - 1 - j;
+            arrayTransferIns = $('#arrayTransferIns').val();
+            contractRapidProfit.getTokenTransferInsByAddress(walletAddress, j, function (error, data) {
+                currTransferIns = data;
+                contractRapidProfit.getTokenStakeByIndex(currTransferIns[0], function (error, data) {
+                    currentStake = data;
+                    arrayStakes.push({amount: currentStake[1]/decimalToken, stakeType: currentStake[2], time: currentStake[3], status: currentStake[4]});
+                    if( indexStake == 0){
+                        drawTableMyPlans(JSON.stringify(arrayStakes));
+                    }
+                });
+            });
+        }
+    });
+}
+
+function makeTableAllPlans() {
+    var walletAddress = web3.eth.accounts[0];
+    var arrayStakes = [];
+    var currentStake;
+    var countStakes = 0;
+    var indexStake = 0;
+    console.log("makeTableAllPlans ...");
+    contractRapidProfit.getCountStakesToken(function (error, data) {
+        countStakes = data;
+        for (var j = 0; j < countStakes; j++) {
+            indexStake = countStakes - 1 - j;
+            contractRapidProfit.getTokenStakeByIndex(indexStake, function (error, data) {
+                currentStake = data;
+                arrayStakes.push({address: currentStake[0], amount: currentStake[1]/decimalToken, stakeType: currentStake[2], time: currentStake[3], status: currentStake[4]});
+                if(indexStake == 0){
+                    drawTableAllPlans(JSON.stringify(arrayStakes));
+                }
+            });
+        }
+    });
+}
+
+function drawTableMyPlans(arrayStakesMyPlan) {
+    var stakeType = ["DAYLY", "WEEKLY", "MONTHLY"];
+    var status = ["ACTIVE", "COMPLETED", "CANCEL"];
+    var strHtml = "";
+    if(arrayStakesMyPlan != ""){
+        var parseArrayStakes = JSON.parse(arrayStakesMyPlan);
+        for(var j = 0; j < parseArrayStakes.length; j++){
+            strHtml = strHtml + '<tr>' + '<td>'+ parseArrayStakes[j].amount + '</td>' + '<td>'+ stakeType[parseArrayStakes[j].stakeType] + '</td>' + '<td>'+ timeConverter(parseArrayStakes[j].time) + '</td>' + '<td>'+ status[parseArrayStakes[j].status] + '</td>' + '</tr>';
+        }
+        $('#myPlansBody').html(strHtml);
+    }
+}
+
+function drawTableAllPlans(arrayStakesAllPlan) {
+    var stakeType = ["DAYLY", "WEEKLY", "MONTHLY"];
+    var status = ["ACTIVE", "COMPLETED", "CANCEL"];
+    var strHtml = "";
+    if(arrayStakesAllPlan != ""){
+        var parseArrayStakes = JSON.parse(arrayStakesAllPlan);
+        for(var j = 0; j < parseArrayStakes.length; j++){
+            strHtml = strHtml + '<tr>' + '<td>'+ parseArrayStakes[j].address + '</td>' + '<td>'+ parseArrayStakes[j].amount + '</td>' + '<td>'+ stakeType[parseArrayStakes[j].stakeType] + '</td>' + '<td>'+ timeConverter(parseArrayStakes[j].time) + '</td>' + '<td>'+ status[parseArrayStakes[j].status] + '</td>' + '</tr>';
+        }
+        $('#allPlansBody').html(strHtml);
+    }
+}
+
+function timeConverter(UNIX_timestamp){
+    var a = new Date(UNIX_timestamp * 1000);
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var year = a.getFullYear();
+    var month = months[a.getMonth()];
+    var date = a.getDate();
+    var hour = a.getHours();
+    var min = a.getMinutes();
+    var sec = a.getSeconds();
+    var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+    return time;
 }
 
 function checkAddress() {
@@ -84,9 +164,7 @@ function checkAddress() {
 }
 
 $(document).ready(function () {
-    var test;
-    var data;
-
+    initContract();
 });
 
 function changeRateDayly() {
@@ -95,22 +173,25 @@ function changeRateDayly() {
 
 function changeRateWeekly() {
     console.log("changeRateWeekly");
+    //drawTableMyPlans($('#arrayStakesMyPlan').val());
+    //drawTableAllPlans($('#arrayStakesAllPlan').val());
 }
 
 function changeRateMonthly() {
     console.log("changeRateMonthly");
 }
 
-function depositEth() {
-    console.log("depositEth");
-}
-
-function withdrawEth() {
-    console.log("withdrawEth");
-}
-
-function depositToken() {
-    console.log("depositToken");
+function depositTokenForUser(stake) {
+    var walletAddress = web3.eth.accounts[0];
+    var currentTime = parseInt(new Date().getTime()/1000);
+    var amount = Number(1 * decimalToken);
+    var result;
+    contractRapidProfit.depositToken(walletAddress, stake, currentTime, amount, function (error, data) {
+        result = data;
+        console.log("walletAddress = " + walletAddress + "amount = " + amount);
+        console.log("currentTime = " + currentTime);
+        console.log("result = " + data);
+    });
 }
 
 function withdrawToken() {
@@ -145,47 +226,6 @@ function batchTransfer() {
         //console.log("numberTimes = " + numberTimes);
         //console.log("remain = " + remain);
         //console.log("realNumberTimes = " + realNumberTimes);
-
-        if (step == numberTimes) {
-            step++;
-        }
-        if (step < numberTimes) {
-            console.log("step*sizePackage=" + step * sizePackage + " sizePackage" + sizePackage);
-            //convertCsvToAddress(step * sizePackage, sizePackage);
-            //convertCsvToValue(step * sizePackage, sizePackage);
-             contract.batchTransfer(convertCsvToAddress(step*sizePackage, sizePackage),convertCsvToValue(step*sizePackage, sizePackage), function(error, data) {
-                console.log("data = " + data);
-             });
-            current_progress = ((step + 1) * sizePackage / fromCsv.length) * 100;
-            setProgressCount(current_progress);
-
-            step++;
-        }
-
-        if (realNumberTimes > numberTimes && step == numberTimes + 1) {
-            console.log("numberTimes*sizePackage=" + numberTimes * sizePackage + " remain" + remain);
-            //convertCsvToAddress(numberTimes * sizePackage, remain);
-            //convertCsvToValue(numberTimes * sizePackage, remain);
-             contract.batchTransfer(convertCsvToAddress(numberTimes*sizePackage, remain),convertCsvToValue(numberTimes*sizePackage, remain), function(error, data) {
-                console.log("data = " + data);
-             });
-            current_progress = 100;
-            setProgressCount(current_progress);
-
-        }
-
-    }
-}
-
-function setProgressCount(countProgress) {
-    $("#test").html("<h1> " + countProgress.toFixed(2) + "%</h1>");
-    $("#dynamic")
-        .css("width", countProgress + "%")
-        .attr("aria-valuenow", countProgress)
-        .text(countProgress + "% Complete");
-    if (countProgress > 99.999) {
-        $("#dynamic").removeClass("active");
-        $("#dynamic").html("Done");
     }
 }
 
@@ -249,6 +289,8 @@ function initContract() {
     console.log("Contract's initialized successfully");
     console.log("current_network = " + current_network);
     console.log("myWalletAddress = " + myWalletAddress);
+    makeTableMyPlans();
+    makeTableAllPlans();
 
 }
 
