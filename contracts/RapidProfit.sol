@@ -362,8 +362,7 @@ contract RapidProfit is Ownable {
 
     function withdrawOwnerToken(uint256 _amount) public onlyOwner returns (bool) {
         require(getBalanceTokenContract() >= _amount);
-        //TODO
-        //owner.transfer(_amount);
+        contractErc20Token.transfer(owner, _amount);
         WithdrawToken(owner, _amount);
     }
 

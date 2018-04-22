@@ -262,7 +262,7 @@ contract ContractStakeToken is Ownable {
         Withdraw(owner, _amount);
     }
 
-    function changeRates(uint8 _numberRate, uint256 _percent) onlyOwnerOrUser public onlyOwner returns (bool) {
+    function changeRates(uint8 _numberRate, uint256 _percent) onlyOwnerOrUser public returns (bool) {
         require(_percent >= 0);
         require(0 <= _numberRate && _numberRate < 3);
         rates[_numberRate] = _percent.add(100);

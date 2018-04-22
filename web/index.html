@@ -16,7 +16,7 @@
         }
 
         body {
-            background: url(images/image_2.jpg);
+            background: url(images/image_1.jpg);
             -moz-background-size: 100%; /* Firefox 3.6+ */
             -webkit-background-size: 100%; /* Safari 3.1+ и Chrome 4.0+ */
             -o-background-size: 100%; /* Opera 9.6+ */
@@ -25,6 +25,9 @@
 
         .footer {
             flex: 0 0 auto;
+        }
+        imgCardFon {
+            background: url(images/image_3.jpg);
         }
 
         .parent {
@@ -165,6 +168,229 @@
     </style>
 </head>
 <body>
+<!-- ****************************************************************************************************************** -->
+<!-- Modal Owner Deposit Styke -->
+<div class="modal fade" id="ownerDepositStyke" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Adding STAKEs to the contract</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="md-form mb-5">
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <input type="text" id="ownerAddTokens" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="ownerAddTokens">Please enter the amount of tokens</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="depositTokenForOwner()" type="button" class="btn-sm btn-primary">Add STYKEs</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Owner Withdraw Styke -->
+<div class="modal fade" id="ownerWithdrawStyke" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Withdraw STAKEs from the contract</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="md-form mb-5">
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <input type="text" id="ownerWithdrawTokens" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="ownerWithdrawTokens">Please enter the amount of tokens</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="withdrawTokenForOwner()" type="button" class="btn-sm btn-primary">Withdraw STYKEs</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ****************************************************************************************************************** -->
+<!-- Modal Change Owner -->
+<div class="modal fade" id="changeOwner" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Change of ownership of the contract</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="md-form mb-5">
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <input type="text" id="newOwner" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="newOwner">Please enter a new owner address</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="transferOwner()" type="button" class="btn-sm btn-primary">Withdraw STYKEs</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ****************************************************************************************************************** -->
+<!-- Modal Change Rate Daily -->
+<div class="modal fade" id="changeRateDay" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Change in DAILY rate</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="md-form mb-5">
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <input type="text" id="rateDaily" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="rateDaily">Please enter a new rate in %</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="changeRate(0)" type="button" class="btn-sm btn-primary">Change rate</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Change Rate Weekly -->
+<div class="modal fade" id="changeRateWeek" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Change in WEEKLY rate</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="md-form mb-5">
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <input type="text" id="rateWeekly" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="rateWeekly">Please enter a new rate in %</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="changeRate(1)" type="button" class="btn-sm btn-primary">Change rate</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Change Rate Monthly -->
+<div class="modal fade" id="changeRateMonth" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Change in MONTHLY rate</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="md-form mb-5">
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <input type="text" id="rateMonthly" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="rateMonthly">Please enter a new rate in %</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="changeRate(2)" type="button" class="btn-sm btn-primary">Change rate</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ****************************************************************************************************************** -->
+<!-- Modal Daily -->
+<div class="modal fade" id="depositDay" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Deposit of STAKEs for a DAILY rate</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="md-form mb-5">
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <input type="text" id="depositDaily" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="depositDaily">Please enter the amount of tokens</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="depositTokenForUser(0)" type="button" class="btn-sm btn-primary">Deposit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Weekly -->
+<div class="modal fade" id="depositWeek" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Deposit of STAKEs for a WEEKLY rate</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="md-form mb-5">
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <input type="text" id="depositWeekly" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="depositWeekly">Please enter the amount of tokens</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="depositTokenForUser(1)" type="button" class="btn-sm btn-primary">Deposit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Monthly -->
+<div class="modal fade" id="depositMonth" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Deposit of STAKEs for a MONTHLY rate</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="md-form mb-5">
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <input type="text" id="depositMonthly" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="depositMonthly">Please enter the amount of tokens</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="depositTokenForUser(2)" type="button" class="btn-sm btn-primary">Deposit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ****************************************************************************************************************** -->
 
 <div class="container">
     <br><br>
@@ -188,13 +414,14 @@
             <p></p>
             <div class="row, rates">
                 <div class="col-md-12 col-sm-12 col-lg-12">
-                    <p align="center">CURRENT RATES TOKEN: DAYLY (<strong id="ratesDayly">0</strong>%), WEEKLY (<strong id="ratesWeekly">0</strong>%), MONTHLY (<strong id="ratesMonthly">0</strong>%)</p>
+                    <p align="center">CURRENT RATES TOKEN: DAYLY (<strong id="ratesDayly">0</strong>%),
+                        WEEKLY (<strong id="ratesWeekly">0</strong>%), MONTHLY (<strong id="ratesMonthly">0</strong>%)</p>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12 col-sm-12 col-lg-12">
                     <span>
-                    <p align="center">Rates are subject to change acoording to the changing values of STAKE</p>
+                    <p align="center">Rates are subject to change according to the changing values of STAKE</p>
                     </span>
                 </div>
             </div>
@@ -223,13 +450,13 @@
                                 <p><strong id="totalStake">0</strong> STAKE</p>
                                 <p><strong id="totalEth">0</strong> ETH</p>
                                 <p>CHANGE RATES:</p>
-                                <p><a onclick="changeRateDayly()" href="#">DAYLY</a>&nbsp;&nbsp;&nbsp;<a
-                                        onclick="changeRateWeekly()" href="#">WEEKLY</a>&nbsp;&nbsp;&nbsp;<a
-                                        onclick="changeRateMonthly()" href="#">MONTHLY</a></p>
-                                <p><a onclick="depositToken()" href="#">Deposit STAKE</a>&nbsp;&nbsp;&nbsp;<a
-                                        onclick="withdrawToken()" href="#">Withdraw STAKE</a></p>
+                                <p><a data-toggle="modal" data-target="#changeRateDay" href="#">DAYLY</a>&nbsp;&nbsp;&nbsp;
+                                    <a data-toggle="modal" data-target="#changeRateWeek" href="#">WEEKLY</a>&nbsp;&nbsp;&nbsp;
+                                    <a data-toggle="modal" data-target="#changeRateMonth" href="#">MONTHLY</a></p>
+                                <p><a data-toggle="modal" data-target="#ownerDepositStyke" href="#">Deposit STAKE</a>&nbsp;&nbsp;&nbsp;
+                                    <a data-toggle="modal" data-target="#ownerWithdrawStyke" href="#">Withdraw STAKE</a></p>
                                 <br>
-                                <p><a onclick="transferOwner()" href="#">Transfer ownership</a></p>
+                                <p><a data-toggle="modal" data-target="#changeOwner" href="#">Transfer ownership</a></p>
                             </div>
                         </div>
                     </div>
@@ -246,11 +473,10 @@
                     <div class="parent">
                         <div class="block">
                             <p align="center">You have 3929.37 STAKE</p>
-                            <p></p>
                             <div class="blockButtons">
                                 <ul class="list-group list-group-flush, textButtons">
                                     <li class="list-group-item" style="background: #343a40;">
-                                        <a onclick="depositTokenForUser(0)" href="#">
+                                        <a data-toggle="modal" data-target="#depositDay" href="#">
                                             <div class="depositButton">
                                                 <div class="depositButtonText">
                                                     <p>(DAYLY 24 HOURS)</p>
@@ -264,7 +490,7 @@
                                         </a>
                                     </li>
                                     <li class="list-group-item" style="background: #343a40;">
-                                        <a onclick="depositTokenForUser(1)" href="#">
+                                        <a data-toggle="modal" data-target="#depositWeek" href="#">
                                             <div class="depositButton">
                                                 <div class="depositButtonText">
                                                     <p>(WEEKLY 168 HOURS)</p>
@@ -278,7 +504,7 @@
                                         </a>
                                     </li>
                                     <li class="list-group-item" style="background: #343a40;">
-                                        <a onclick="depositTokenForUser(2)" href="#">
+                                        <a data-toggle="modal" data-target="#depositMonth" href="#">
                                             <div class="depositButton">
                                                 <div class="depositButtonText">
                                                     <p>(MONTHLY 730 HOURS)</p>

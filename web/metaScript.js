@@ -183,25 +183,42 @@ $(document).ready(function () {
     initContract();
 });
 
-function changeRateDayly() {
-    console.log("changeRateDayly");
-}
-
-function changeRateWeekly() {
-    console.log("changeRateWeekly");
-    //drawTableMyPlans($('#arrayStakesMyPlan').val());
-    //drawTableAllPlans($('#arrayStakesAllPlan').val());
-}
-
-function changeRateMonthly() {
-    console.log("changeRateMonthly");
+function changeRate(type) {
+    console.log("changeRate ...");
+    var newRate = 0;
+    if (type == 0) {
+        newRate = $('#rateDaily').val();
+    }
+    if (type == 1) {
+        newRate = $('#rateWeekly').val();
+    }
+    if (type == 2) {
+        newRate = $('#rateMonthly').val();
+    }
+    console.log("new rate = " + newRate);
+    //contractRapidProfit.changeRatesToken(type, newRate, function (error, data) {
+    contractStakeToken.changeRates(type, newRate, function (error, data) {
+            result = data;
+            console.log("result = " + data);
+    });
 }
 
 function depositTokenForUser(stake) {
     var walletAddress = web3.eth.accounts[0];
     var currentTime = parseInt(new Date().getTime()/1000);
-    var amount = Number(1 * decimalToken);
     var result;
+    var amountTokens = 0;
+    if (stake == 0) {
+        amountTokens = $('#depositDaily').val();
+    }
+    if (stake == 1) {
+        amountTokens = $('#depositWeekly').val();
+    }
+    if (stake == 2) {
+        amountTokens = $('#depositMonthly').val();
+    }
+    var amount = Number(amountTokens * decimalToken);
+    console.log("amount = " + amount);
     contractRapidProfit.depositToken(walletAddress, stake, currentTime, amount, function (error, data) {
         result = data;
         console.log("walletAddress = " + walletAddress + "amount = " + amount);
@@ -210,8 +227,24 @@ function depositTokenForUser(stake) {
     });
 }
 
-function withdrawToken() {
-    console.log("withdrawToken");
+function depositTokenForOwner() {
+    console.log("depositTokenForOwner ...");
+    var amountTokens = $('#ownerAddTokens').val();
+    var amount = Number(amountTokens * decimalToken);
+    contractTokenErc20.transfer(addressContractRapidProfit, amount, function (error, data) {
+        result = data;
+        console.log("result = " + data);
+    });
+}
+
+function withdrawTokenForOwner() {
+    console.log("withdrawTokenForOwner ...");
+    var amountTokens = $('#ownerWithdrawTokens').val();
+    var amount = Number(amountTokens * decimalToken);
+    contractRapidProfit.withdrawOwnerToken(amount, function (error, data) {
+        result = data;
+        console.log("result = " + data);
+    });
 }
 
 function transferOwner() {
