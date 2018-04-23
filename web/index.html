@@ -2,10 +2,13 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>STYKE deposit</title>
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/jquery.csv.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/panel.css">
+    <script src="js/panel.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 
     <style>
@@ -52,6 +55,11 @@
             display: block;
             border: none;
         }
+        .blockTable{
+            margin: 30px;
+            font-size: 0.35em;
+            display: block;
+        }
 
         }
         .HStakeIt {
@@ -92,7 +100,7 @@
         }
 
         .blockAdminPanel {
-            height: 230px;
+            height: 185px;
             width: 500px;
             background: #343a40;
             display: block;
@@ -101,7 +109,7 @@
         }
 
         .blockButtons {
-            height: 230px;
+            height: 310px;
             width: 500px;
             background: #343a40;
             display: block;
@@ -237,7 +245,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">Close</button>
-                <button onclick="transferOwner()" type="button" class="btn-sm btn-primary">Withdraw STYKEs</button>
+                <button onclick="transferOwner()" type="button" class="btn-sm btn-primary">Change owner</button>
             </div>
         </div>
     </div>
@@ -448,7 +456,6 @@
                                 <h4>Administrator functions</h4>
                                 <p>The smart contract currently contains:</p>
                                 <p><strong id="totalStake">0</strong> STAKE</p>
-                                <p><strong id="totalEth">0</strong> ETH</p>
                                 <p>CHANGE RATES:</p>
                                 <p><a data-toggle="modal" data-target="#changeRateDay" href="#">DAYLY</a>&nbsp;&nbsp;&nbsp;
                                     <a data-toggle="modal" data-target="#changeRateWeek" href="#">WEEKLY</a>&nbsp;&nbsp;&nbsp;
@@ -472,7 +479,7 @@
                 <div class="col-8" style="font-weight: 600;">
                     <div class="parent">
                         <div class="block">
-                            <p align="center">You have 3929.37 STAKE</p>
+                            <p align="center">You have <strong id="myStake">0</strong> STAKE</p>
                             <div class="blockButtons">
                                 <ul class="list-group list-group-flush, textButtons">
                                     <li class="list-group-item" style="background: #343a40;">
@@ -517,6 +524,20 @@
                                             </div>
                                         </a>
                                     </li>
+                                    <li class="list-group-item" style="background: #343a40;">
+                                        <a onclick="withdrawTokenForUser()" href="">
+                                            <div class="depositButton">
+                                                <div class="depositButtonText">
+                                                    <p>WITHDRAW STYKES</p>
+                                                    <p>&nbsp;</p>
+                                                </div>
+                                                <div class="depositButtonImage">
+                                                    <img align="right" src="images/depositButton.jpg" width="170"
+                                                         height="42" alt="StakeIt">
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div> <!-- end block -->
@@ -533,52 +554,55 @@
                 <div class="col-8" style="font-weight: 600;">
                     <div class="parent">
                         <div class="block">
-                            <h4 align="center">DASHBOARD</h4>
-                            <br>
-                            <!-- Nav tabs -->
-                            <ul class="nav nav-tabs" role="tablist">
-                                <li class="nav-item" style="background-color: #343a40;">
-                                    <a class="nav-link active" data-toggle="tab" href="#home">MY PLANS</a>
-                                </li>
-                                <li class="nav-item" style="background-color: #343a40;">
-                                    <a class="nav-link" data-toggle="tab" href="#menu1">ALL PLANS</a>
-                                </li>
-                            </ul>
+                            <h5 align="center">DASHBOARD</h5>
+                            <div class="1blockTable">
+                                <!-- Nav tabs -->
+                                <ul class="nav nav-tabs" role="tablist" style="margin: 20px;font-size: 11px;">
+                                    <li class="nav-item" style="background-color: #343a40;">
+                                        <a class="nav-link active" data-toggle="tab" href="#home">MY PLANS</a>
+                                    </li>
+                                    <li class="nav-item" style="background-color: #343a40;">
+                                        <a class="nav-link" data-toggle="tab" href="#menu1">ALL PLANS</a>
+                                    </li>
+                                </ul>
 
-                            <!-- Tab panes -->
-                            <div class="tab-content">
-                                <div id="home" class="container tab-pane active"><br>
-                                    <h3>MY PLANS</h3>
-                                    <table id="myPlans" class="table table-dark table-striped">
-                                        <thead>
-                                        <tr>
-                                            <th>Amount</th>
-                                            <th>Type</th>
-                                            <th>Time</th>
-                                            <th>Status</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="myPlansBody">
-                                        </tbody>
-                                    </table>
+                                <!-- Tab panes -->
+                                <div class="tab-content" style="font-size: 11px;">
+                                    <div id="home" class="container tab-pane active"><br>
+                                        <h6>MY PLANS</h6>
+                                        <table id="myPlans" class="table table-dark table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th>Amount</th>
+                                                <th>Type</th>
+                                                <th>Time</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="myPlansBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="menu1" class="container tab-pane fade"><br>
+                                        <h6>ALL PLANS</h6>
+                                        <table id="allPlans" class="table table-dark table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th>Address</th>
+                                                <th>Amount</th>
+                                                <th>Type</th>
+                                                <th>Time</th>
+                                                <th>Status</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="allPlansBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                                <div id="menu1" class="container tab-pane fade"><br>
-                                    <h3>ALL PLANS</h3>
-                                    <table id="allPlans" class="table table-dark table-striped">
-                                        <thead>
-                                        <tr>
-                                            <th>Address</th>
-                                            <th>Amount</th>
-                                            <th>Type</th>
-                                            <th>Time</th>
-                                            <th>Status</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="allPlansBody">
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+
+                            </div> <!-- end blockTable -->
 
                         </div> <!-- end block -->
                     </div>

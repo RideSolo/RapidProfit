@@ -53,6 +53,7 @@ window.addEventListener('load', function () {
 
 function startApp() {
     initContract();
+    var myWalletAddress = web3.eth.accounts[0];
     contractTokenErc20.balanceOf(addressContractRapidProfit, function (error, data) {
         walletTokens = Number(data) / decimalToken;
         $('#totalStake').html(walletTokens.toFixed(4));
@@ -73,7 +74,10 @@ function startApp() {
         rateMonthly = data - 100;
         $('#ratesMonthly').html(rateMonthly.toFixed(0));
     });
-
+    contractRapidProfit.balanceOfToken(myWalletAddress, function (error, data) {
+        myAmountToken = Number(data) / decimalToken;
+        $('#myStake').html(myAmountToken.toFixed(4));
+    });
 }
 
 function makeTableMyPlans() {
@@ -83,18 +87,20 @@ function makeTableMyPlans() {
     var arrayStakes = [];
     var currentStake;
     var indexStake = 0;
+    var currIndexStake;
     console.log("makeTableMyPlans ...");
     contractRapidProfit.getCountTransferInsToken(walletAddress, function (error, data) {
         numberTransferIns = data;
         arrayStakes = [];
         for (var j = 0; j < numberTransferIns; j++) {
             indexStake = numberTransferIns - 1 - j;
-            arrayTransferIns = $('#arrayTransferIns').val();
             contractRapidProfit.getTokenTransferInsByAddress(walletAddress, j, function (error, data) {
                 currTransferIns = data;
+                currIndexStake = currTransferIns[0];
                 contractRapidProfit.getTokenStakeByIndex(currTransferIns[0], function (error, data) {
                     currentStake = data;
-                    arrayStakes.push({amount: currentStake[1]/decimalToken, stakeType: currentStake[2], time: currentStake[3], status: currentStake[4]});
+                    arrayStakes.push({amount: currentStake[1]/decimalToken, stakeType: currentStake[2], time: currentStake[3],
+                        status: currentStake[4], index: arguments[1]});
                     if( indexStake == 0){
                         drawTableMyPlans(JSON.stringify(arrayStakes));
                     }
@@ -133,7 +139,9 @@ function drawTableMyPlans(arrayStakesMyPlan) {
     if(arrayStakesMyPlan != ""){
         var parseArrayStakes = JSON.parse(arrayStakesMyPlan);
         for(var j = 0; j < parseArrayStakes.length; j++){
-            strHtml = strHtml + '<tr>' + '<td>'+ parseArrayStakes[j].amount + '</td>' + '<td>'+ stakeType[parseArrayStakes[j].stakeType] + '</td>' + '<td>'+ timeConverter(parseArrayStakes[j].time) + '</td>' + '<td>'+ status[parseArrayStakes[j].status] + '</td>' + '</tr>';
+            strHtml = strHtml + '<tr>' + '<td>'+ parseArrayStakes[j].amount + '</td>' + '<td>'+ stakeType[parseArrayStakes[j].stakeType] +
+                '</td>' + '<td>'+ timeConverter(parseArrayStakes[j].time) + '</td>' + '<td>'+ status[parseArrayStakes[j].status] + '</td>' +
+                '<td><button onclick="cancel('+ parseArrayStakes[j].index +')" type="button" class="btn btn-outline-primary btn-sm">Cancel</button></td>' + '</tr>';
         }
         $('#myPlansBody').html(strHtml);
     }
@@ -181,6 +189,7 @@ function checkAddress() {
 
 $(document).ready(function () {
     initContract();
+    $(".tabs").lightTabs();
 });
 
 function changeRate(type) {
@@ -247,8 +256,23 @@ function withdrawTokenForOwner() {
     });
 }
 
+function withdrawTokenForUser() {
+    console.log("withdrawTokenForUser ...");
+    var walletAddress = web3.eth.accounts[0];
+    contractRapidProfit.withdrawToken(walletAddress, function (error, data) {
+        result = data;
+        console.log("result = " + data);
+    });
+}
+
 function transferOwner() {
-    console.log("transferOwner");
+    var newOwner = $('#newOwner').val();
+    console.log("Change owner to: " + newOwner);
+    contractRapidProfit.changeOwner(newOwner, function (error, data) {
+        result = data;
+        console.log("result = " + data);
+    });
+
 }
 
 function userDepositDaylyToken() {
@@ -263,19 +287,13 @@ function userDepositMonthlyToken() {
     console.log("userDepositMonthlyToken");
 }
 
-function batchTransfer() {
-    var contract = initContract();
+function cancel(indexStake) {
+    console.log("Cancel styke ...");
+    contractRapidProfit.cancelToken(indexStake, function (error, data) {
+        result = data;
+        console.log("result = " + data);
+    });
 
-    if (walletTokens == 0 && walletTokens < sentTokens) {
-        $('#errorInfo').html("Not enough tokens to perform an operation!");
-        $('#divErrorInfo').show();
-    } else {
-        $('#errorInfo').html("");
-        $('#divDappInfo').hide();
-        //console.log("numberTimes = " + numberTimes);
-        //console.log("remain = " + remain);
-        //console.log("realNumberTimes = " + realNumberTimes);
-    }
 }
 
 function getAmountTokens() {
