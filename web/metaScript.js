@@ -1,9 +1,6 @@
 var sizePackage = 40;
 var walletTokens = 0;
 var walletEth = 0;
-var rateDayly = 0;
-var rateWeekly = 0;
-var rateMonthly = 0;
 var fromCsv;
 var step = 0;
 var sentTokens = 0;
@@ -54,6 +51,10 @@ window.addEventListener('load', function () {
 function startApp() {
     initContract();
     var myWalletAddress = web3.eth.accounts[0];
+    var rateDayly = 0;
+    var rateWeekly = 0;
+    var rateMonthly = 0;
+
     contractTokenErc20.balanceOf(addressContractRapidProfit, function (error, data) {
         walletTokens = Number(data) / decimalToken;
         $('#totalStake').html(walletTokens.toFixed(4));
@@ -65,18 +66,29 @@ function startApp() {
     contractStakeToken.rates(0, function (error, data) {
         rateDayly = data - 100;
         $('#ratesDayly').html(rateDayly.toFixed(0));
+        $('#ratesDailyButton').html(rateDayly.toFixed(0));
     });
     contractStakeToken.rates(1, function (error, data) {
         rateWeekly = data - 100;
         $('#ratesWeekly').html(rateWeekly.toFixed(0));
+        $('#ratesWeeklyButton').html(rateWeekly.toFixed(0));
     });
     contractStakeToken.rates(2, function (error, data) {
         rateMonthly = data - 100;
         $('#ratesMonthly').html(rateMonthly.toFixed(0));
+        $('#ratesMonthlyButton').html(rateMonthly.toFixed(0));
     });
     contractRapidProfit.balanceOfToken(myWalletAddress, function (error, data) {
         myAmountToken = Number(data) / decimalToken;
         $('#myStake').html(myAmountToken.toFixed(4));
+    });
+    contractStakeToken.totalDepositTokenAll(function (error, data) {
+        rateDayly = Number(data) / decimalToken;
+        $('#totalDepositedStake').html(rateDayly.toFixed(4));
+    });
+    contractStakeToken.totalWithdrawTokenAll(function (error, data) {
+        rateDayly = Number(data) / decimalToken;
+        $('#totalWithdraweddStake').html(rateDayly.toFixed(4));
     });
 }
 
@@ -87,7 +99,6 @@ function makeTableMyPlans() {
     var arrayStakes = [];
     var currentStake;
     var indexStake = 0;
-    var currIndexStake;
     console.log("makeTableMyPlans ...");
     contractRapidProfit.getCountTransferInsToken(walletAddress, function (error, data) {
         numberTransferIns = data;
@@ -96,11 +107,12 @@ function makeTableMyPlans() {
             indexStake = numberTransferIns - 1 - j;
             contractRapidProfit.getTokenTransferInsByAddress(walletAddress, j, function (error, data) {
                 currTransferIns = data;
-                currIndexStake = currTransferIns[0];
+                var currIndexStake = currTransferIns[0];
                 contractRapidProfit.getTokenStakeByIndex(currTransferIns[0], function (error, data) {
                     currentStake = data;
                     arrayStakes.push({amount: currentStake[1]/decimalToken, stakeType: currentStake[2], time: currentStake[3],
-                        status: currentStake[4], index: arguments[1]});
+                        status: currentStake[4], index: currIndexStake});
+                    console.log("currIndexStake = " + currIndexStake);
                     if( indexStake == 0){
                         drawTableMyPlans(JSON.stringify(arrayStakes));
                     }
@@ -154,7 +166,7 @@ function drawTableAllPlans(arrayStakesAllPlan) {
     if(arrayStakesAllPlan != ""){
         var parseArrayStakes = JSON.parse(arrayStakesAllPlan);
         for(var j = 0; j < parseArrayStakes.length; j++){
-            strHtml = strHtml + '<tr>' + '<td>'+ parseArrayStakes[j].address + '</td>' + '<td>'+ parseArrayStakes[j].amount + '</td>' + '<td>'+ stakeType[parseArrayStakes[j].stakeType] + '</td>' + '<td>'+ timeConverter(parseArrayStakes[j].time) + '</td>' + '<td>'+ status[parseArrayStakes[j].status] + '</td>' + '</tr>';
+            strHtml = strHtml + '<tr>' + '<td style="width: 160px;">'+ parseArrayStakes[j].address + '</td>' + '<td>'+ parseArrayStakes[j].amount + '</td>' + '<td>'+ stakeType[parseArrayStakes[j].stakeType] + '</td>' + '<td>'+ timeConverter(parseArrayStakes[j].time) + '</td>' + '<td>'+ status[parseArrayStakes[j].status] + '</td>' + '</tr>';
         }
         $('#allPlansBody').html(strHtml);
     }
@@ -189,7 +201,6 @@ function checkAddress() {
 
 $(document).ready(function () {
     initContract();
-    $(".tabs").lightTabs();
 });
 
 function changeRate(type) {

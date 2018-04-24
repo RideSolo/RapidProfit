@@ -7,8 +7,6 @@
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/jquery.csv.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/panel.css">
-    <script src="js/panel.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 
     <style>
@@ -63,7 +61,7 @@
 
         }
         .HStakeIt {
-            font-size: 2.35em;
+            font-size: 1.95em;
             font-weight: 600;
             line-height: 0.8;
         }
@@ -100,7 +98,7 @@
         }
 
         .blockAdminPanel {
-            height: 185px;
+            height: 225px;
             width: 500px;
             background: #343a40;
             display: block;
@@ -109,7 +107,7 @@
         }
 
         .blockButtons {
-            height: 310px;
+            height: 380px;
             width: 500px;
             background: #343a40;
             display: block;
@@ -138,7 +136,7 @@
             position: relative;
             display: block;
             left: -10px;
-            bottom: 36px;
+            bottom: 34px;
 
         }
 
@@ -156,23 +154,23 @@
             color: #c82333;
         }
 
-        /* For table */
-        /*        tr {
-                    width: 100%;
-                    display: inline-table;
-                    table-layout: fixed;
-                }
-                table{
-                    height:300px;
-                    display: -moz-groupbox;
-                }
-                tbody{
-                    overflow-y: scroll;
-                    height: 200px;
-                    width: 100%;
-                    position: absolute;
-                }
-        */
+        tr {
+            width: 100%;
+            display: inline-table;
+            table-layout: fixed;
+        }
+
+        table{
+            height:400px;
+            display: -moz-groupbox;
+            width: 600px;
+        }
+        tbody{
+            overflow-y: scroll;
+            height: 350px;
+            width: 95%;
+            position: absolute;
+        }
     </style>
 </head>
 <body>
@@ -410,9 +408,9 @@
                 </div>
                 <div class="col-md-4 col-sm-4 col-lg-4">
                     <span class="HStakeIt">
-                        <p align="center"><font color="#fa8e47">STAKEIT TOKEN</font></p>
-                        <p align="center"><font color="#fa8e47">STAKING</font></p>
-                        <p align="center"><font color="#fa8e47">SMART CONTRACT</font></p>
+                        <p align="center"><font color="#ead238">STAKEIT TOKEN</font></p>
+                        <p align="center"><font color="#ead238">STAKING</font></p>
+                        <p align="center"><font color="#ead238">SMART CONTRACT</font></p>
                     </span>
                 </div>
                 <div class="col-md-4 col-sm-4 col-lg-4">
@@ -454,8 +452,10 @@
                         <div class="block">
                             <div class="blockAdminPanel">
                                 <h4>Administrator functions</h4>
-                                <p>The smart contract currently contains:</p>
-                                <p><strong id="totalStake">0</strong> STAKE</p>
+                                <p>The smart contract currently contains STAKE:</p>
+                                <p>Current balance: <strong id="totalStake" style="color: #ead238">0</strong></p>
+                                <p>It was deposited: <strong id="totalDepositedStake" style="color: #ead238">0</strong></p>
+                                <p>It was withdrawed: <strong id="totalWithdraweddStake" style="color: #ead238">0</strong></p></p>
                                 <p>CHANGE RATES:</p>
                                 <p><a data-toggle="modal" data-target="#changeRateDay" href="#">DAYLY</a>&nbsp;&nbsp;&nbsp;
                                     <a data-toggle="modal" data-target="#changeRateWeek" href="#">WEEKLY</a>&nbsp;&nbsp;&nbsp;
@@ -487,11 +487,11 @@
                                             <div class="depositButton">
                                                 <div class="depositButtonText">
                                                     <p>(DAYLY 24 HOURS)</p>
-                                                    <p>CURRENT RATE: 1%</p>
+                                                    <p>CURRENT RATE: <strong id="ratesDailyButton">0</strong>%</p>
                                                 </div>
                                                 <div class="depositButtonImage">
-                                                    <img align="right" src="images/depositButton.jpg" width="170"
-                                                         height="42" alt="StakeIt">
+                                                    <img align="right" src="images/deposit.png" width="170"
+                                                         height="40" alt="StakeIt">
                                                 </div>
                                             </div>
                                         </a>
@@ -501,11 +501,11 @@
                                             <div class="depositButton">
                                                 <div class="depositButtonText">
                                                     <p>(WEEKLY 168 HOURS)</p>
-                                                    <p>CURRENT RATE: 9%</p>
+                                                    <p>CURRENT RATE: <strong id="ratesWeeklyButton">0</strong>%</p>
                                                 </div>
                                                 <div class="depositButtonImage">
-                                                    <img align="right" src="images/depositButton.jpg" width="170"
-                                                         height="42" alt="StakeIt">
+                                                    <img align="right" src="images/deposit.png" width="170"
+                                                         height="40" alt="StakeIt">
                                                 </div>
                                             </div>
                                         </a>
@@ -515,11 +515,11 @@
                                             <div class="depositButton">
                                                 <div class="depositButtonText">
                                                     <p>(MONTHLY 730 HOURS)</p>
-                                                    <p>CURRENT RATE: 36%</p>
+                                                    <p>CURRENT RATE: <strong id="ratesMonthlyButton">0</strong>%</p>
                                                 </div>
                                                 <div class="depositButtonImage">
-                                                    <img align="right" src="images/depositButton.jpg" width="170"
-                                                         height="42" alt="StakeIt">
+                                                    <img align="right" src="images/deposit.png" width="170"
+                                                         height="40" alt="StakeIt">
                                                 </div>
                                             </div>
                                         </a>
@@ -532,8 +532,22 @@
                                                     <p>&nbsp;</p>
                                                 </div>
                                                 <div class="depositButtonImage">
-                                                    <img align="right" src="images/depositButton.jpg" width="170"
-                                                         height="42" alt="StakeIt">
+                                                    <img align="right" src="images/withdraw.png" width="170"
+                                                         height="40" alt="StakeIt">
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="list-group-item" style="background: #343a40;">
+                                        <a onclick="calculator()" href="">
+                                            <div class="depositButton">
+                                                <div class="depositButtonText">
+                                                    <p>CALCULATOR</p>
+                                                    <p>FOR DEPOSITING</p>
+                                                </div>
+                                                <div class="depositButtonImage">
+                                                    <img align="right" src="images/calculator.png" width="170"
+                                                         height="40" alt="StakeIt">
                                                 </div>
                                             </div>
                                         </a>
@@ -586,10 +600,10 @@
                                     </div>
                                     <div id="menu1" class="container tab-pane fade"><br>
                                         <h6>ALL PLANS</h6>
-                                        <table id="allPlans" class="table table-dark table-striped">
+                                        <table id="allPlans" class="table table-dark table-striped" style="overflow: auto;">
                                             <thead>
                                             <tr>
-                                                <th>Address</th>
+                                                <th style="width: 160px;">Address</th>
                                                 <th>Amount</th>
                                                 <th>Type</th>
                                                 <th>Time</th>
