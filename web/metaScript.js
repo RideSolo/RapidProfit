@@ -90,6 +90,7 @@ function startApp() {
         rateDayly = Number(data) / decimalToken;
         $('#totalWithdraweddStake').html(rateDayly.toFixed(4));
     });
+    readAllowance();
 }
 
 function makeTableMyPlans() {
@@ -223,28 +224,77 @@ function changeRate(type) {
     });
 }
 
+function readAllowance() {
+    var walletAddress = web3.eth.accounts[0];
+    contractTokenErc20.allowance(walletAddress, addressContractRapidProfit, function (error, data) {
+        result = data / decimalToken;
+        console.log("result = " + result);
+        var amount = result.toFixed(4);
+        $('#balanceDailyDeposit').html(amount);
+        $('#balanceWeeklyDeposit').html(amount);
+        $('#balanceMonthlyDeposit').html(amount);
+
+        $('#dailyAllowance').val(amount);
+        $('#depositDaily').val(amount);
+
+        $('#weeklyAllowance').val(amount);
+        $('#depositWeekly').val(amount);
+
+        $('#monthlyAllowance').val(amount);
+        $('#depositMonthly').val(amount);
+
+    });
+}
+
+function aprove() {
+    var amount = $('#aproveDaily').val() * decimalToken;
+    contractTokenErc20.approve(addressContractRapidProfit, amount, function (error, data) {
+        result = data / decimalToken;
+        console.log("result = " + result);
+    });
+}
+
 function depositTokenForUser(stake) {
     var walletAddress = web3.eth.accounts[0];
     var currentTime = parseInt(new Date().getTime()/1000);
     var result;
     var amountTokens = 0;
+    var nonDeposit = false;
+    var amount = 0;
     if (stake == 0) {
         amountTokens = $('#depositDaily').val();
+        if ($('#dailyAllowance').val() < amountTokens) {
+            nonDeposit = true;
+            $('#divErrorInfoDaily').show();
+        }
     }
     if (stake == 1) {
         amountTokens = $('#depositWeekly').val();
+        if ($('#weeklyAllowance').val() < amountTokens) {
+            nonDeposit = true;
+            $('#divErrorInfoWeekly').show();
+        }
     }
     if (stake == 2) {
         amountTokens = $('#depositMonthly').val();
+        if ($('#monthlyAllowance').val() < amountTokens) {
+            nonDeposit = true;
+            $('#divErrorInfoMonthly').show();
+        }
     }
-    var amount = Number(amountTokens * decimalToken);
+    amount = amountTokens * decimalToken;
     console.log("amount = " + amount);
-    contractRapidProfit.depositToken(walletAddress, stake, currentTime, amount, function (error, data) {
-        result = data;
-        console.log("walletAddress = " + walletAddress + "amount = " + amount);
-        console.log("currentTime = " + currentTime);
-        console.log("result = " + data);
-    });
+    if (!nonDeposit) {
+        $('#divErrorInfoDaily').hide();
+        $('#divErrorInfoWeekly').hide();
+        $('#divErrorInfoMonthly').hide();
+        contractRapidProfit.depositToken(walletAddress, stake, currentTime, amount, function (error, data) {
+            result = data;
+            console.log("walletAddress = " + walletAddress + "amount = " + amount);
+            console.log("currentTime = " + currentTime);
+            console.log("result = " + data);
+        });
+    }
 }
 
 function depositTokenForOwner() {
@@ -283,51 +333,28 @@ function transferOwner() {
         result = data;
         console.log("result = " + data);
     });
-
 }
 
-function userDepositDaylyToken() {
-    console.log("userDepositDaylyToken");
-}
+function calculator() {
+    console.log("calculate ...");
+    var currentStake = $('input[name=radio]:checked').val();
+    var amount = $('#amount').val();
+    var days = $('#days').val();
 
-function userDepositWeeklyToken() {
-    console.log("userDepositWeeklyToken");
-}
-
-function userDepositMonthlyToken() {
-    console.log("userDepositMonthlyToken");
+    contractRapidProfit.calculator(currentStake, amount * decimalToken, days*24, function (error, data) {
+        result = data / decimalToken;
+        console.log("result = " + result.toFixed(4));
+        $('#result').html(result.toFixed(4));
+    });
 }
 
 function cancel(indexStake) {
     console.log("Cancel styke ...");
     contractRapidProfit.cancelToken(indexStake, function (error, data) {
         result = data;
-        console.log("result = " + data);
+        console.log("result = " + result);
     });
 
-}
-
-function getAmountTokens() {
-    var result = 0;
-    for (var i = 0; i < fromCsv.length; i++) {
-        result = result + Number(fromCsv[i].value);
-    }
-    return result;
-}
-
-function roundLessToPackage(num) {
-    return Math.floor(num / sizePackage) * sizePackage;
-}
-
-function convertCsvToAddress(position, numberAdresses) {
-    console.log("transfering adresses:");
-    var arrayAdresses = [];
-    for (var i = position; i < position + numberAdresses; i++) {
-        arrayAdresses.push(fromCsv[i].address.toString());
-        console.log("i=" + i + " address=" + fromCsv[i].address.toString() + "\n");
-    }
-    $('#lastAddress').html(fromCsv[i-1].address);
-    return arrayAdresses
 }
 
 function pauseBrowser(millis) {
@@ -336,16 +363,6 @@ function pauseBrowser(millis) {
     do {
         curDate = Date.now();
     } while (curDate - date < millis);
-}
-
-function convertCsvToValue(position, numberValues) {
-    console.log("transfering values:");
-    var arrayValues = [];
-    for (var i = position; i < position + numberValues; i++) {
-        arrayValues.push(Number(fromCsv[i].value));
-        console.log("i=" + i + " value=" + Number(fromCsv[i].value) + "\n");
-    }
-    return arrayValues;
 }
 
 function initContract() {
@@ -359,6 +376,8 @@ function initContract() {
         $('#divErrorInfo').hide();
     }
 
+    $('#divErrorInfoDaily').hide();
+
     contractStakeEth = web3.eth.contract(abiContractStakeEth).at(addressContractStakeEth);
     contractStakeToken = web3.eth.contract(abiContractStakeToken).at(addressContractStakeToken);
     contractRapidProfit = web3.eth.contract(abiContractRapidProfit).at(addressContractRapidProfit);
@@ -369,11 +388,8 @@ function initContract() {
     console.log("myWalletAddress = " + myWalletAddress);
     makeTableMyPlans();
     makeTableAllPlans();
-
 }
 
 function resetting() {
     location.reload();
 }
-
-//https://getbootstrap.com/docs/4.0/components/popovers/

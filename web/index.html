@@ -323,7 +323,7 @@
 </div>
 
 <!-- ****************************************************************************************************************** -->
-<!-- Modal Daily -->
+<!-- Modal Daily Deposit -->
 <div class="modal fade" id="depositDay" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -333,21 +333,39 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+            <input id="dailyAllowance" name="dailyAllowance" value="" type="hidden">
+
             <div class="modal-body">
+                <p>You are available for <strong id="balanceDailyDeposit">0</strong> token</p>
+                <p style="font-size: 10px;">This does not mean that you have them. It's just your permission to operate with deposition.
+                    In the field below you can add the amount of tokens for performing deposit operations.</p>
+                <p style="font-size: 12px;">Attention: it is necessary to wait for the recording of this operation in the Blockchain.
+                    Do not try to immediately put the tokens on the deposit!
+                    Close the window and wait until you have the required number of tokens to deposit. You will see this when they appear on the top line of this form.</p>
+                <p></p>
+                <div class="md-form mb-5">
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <input type="text" id="aproveDaily" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="aproveDaily">Please enter the number of tokens for your aprove to deposit.</label>
+                </div>
+                <div class="alert alert-danger" id="divErrorInfoDaily">
+                    <div id="errorInfoDaily">Wrong amount of tokens entered</div>
+                </div>
                 <div class="md-form mb-5">
                     <i class="fa fa-user prefix grey-text"></i>
                     <input type="text" id="depositDaily" class="form-control validate">
-                    <label data-error="wrong" data-success="right" for="depositDaily">Please enter the amount of tokens</label>
+                    <label data-error="wrong" data-success="right" for="depositDaily">Please enter the amount of tokens for deposit</label>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="aprove()" type="button" class="btn-sm btn-primary">Aprove</button>
                 <button onclick="depositTokenForUser(0)" type="button" class="btn-sm btn-primary">Deposit</button>
             </div>
         </div>
     </div>
 </div>
-<!-- Modal Weekly -->
+<!-- Modal Weekly Deposit -->
 <div class="modal fade" id="depositWeek" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -357,7 +375,27 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+            <input id="weeklyAllowance" name="weeklyAllowance" value="" type="hidden">
+
             <div class="modal-body">
+                <p>You are available for <strong id="balanceWeeklyDeposit">0</strong> token</p>
+
+                <p>You are available for <strong id="balanceWeeklyDeposit">0</strong> token</p>
+                <p style="font-size: 10px;">This does not mean that you have them. It's just your permission to operate with deposition.
+                    In the field below you can add the amount of tokens for performing deposit operations.</p>
+                <p style="font-size: 12px;">Attention: it is necessary to wait for the recording of this operation in the Blockchain.
+                    Do not try to immediately put the tokens on the deposit!
+                    Close the window and wait until you have the required number of tokens to deposit. You will see this when they appear on the top line of this form.</p>
+                <p></p>
+                <div class="md-form mb-5">
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <input type="text" id="aproveWeekly" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="aproveWeekly">Please enter the number of tokens for your aprove to deposit.</label>
+                </div>
+                <div class="alert alert-danger" id="divErrorInfoWeekly">
+                    <div id="errorInfoWeekly">Wrong amount of tokens entered</div>
+                </div>
+
                 <div class="md-form mb-5">
                     <i class="fa fa-user prefix grey-text"></i>
                     <input type="text" id="depositWeekly" class="form-control validate">
@@ -366,12 +404,13 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="aprove()" type="button" class="btn-sm btn-primary">Aprove</button>
                 <button onclick="depositTokenForUser(1)" type="button" class="btn-sm btn-primary">Deposit</button>
             </div>
         </div>
     </div>
 </div>
-<!-- Modal Monthly -->
+<!-- Modal Monthly Deposit -->
 <div class="modal fade" id="depositMonth" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -381,7 +420,26 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+            <input id="monthlyAllowance" name="monthlyAllowance" value="" type="hidden">
+
             <div class="modal-body">
+                <p>You are available for <strong id="balanceMonthlyDeposit">0</strong> token</p>
+
+                <p>You are available for <strong id="balanceMonthlyDeposit">0</strong> token</p>
+                <p style="font-size: 10px;">This does not mean that you have them. It's just your permission to operate with deposition.
+                    In the field below you can add the amount of tokens for performing deposit operations.</p>
+                <p style="font-size: 12px;">Attention: it is necessary to wait for the recording of this operation in the Blockchain.
+                    Do not try to immediately put the tokens on the deposit!
+                    Close the window and wait until you have the required number of tokens to deposit. You will see this when they appear on the top line of this form.</p>
+                <p></p>
+                <div class="md-form mb-5">
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <input type="text" id="aproveMonthly" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="aproveMonthly">Please enter the number of tokens for your aprove to deposit.</label>
+                </div>
+                <div class="alert alert-danger" id="divErrorInfoMonthly">
+                    <div id="errorInfoMonthly">Wrong amount of tokens entered</div>
+                </div>
                 <div class="md-form mb-5">
                     <i class="fa fa-user prefix grey-text"></i>
                     <input type="text" id="depositMonthly" class="form-control validate">
@@ -390,12 +448,61 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="aprove()" type="button" class="btn-sm btn-primary">Aprove</button>
                 <button onclick="depositTokenForUser(2)" type="button" class="btn-sm btn-primary">Deposit</button>
             </div>
         </div>
     </div>
 </div>
+<!-- ****************************************************************************************************************** -->
+<!-- Modal Calculator -->
+<div class="modal fade" id="calculator" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Calculator for depositing</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="md-form mb-5">
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <div class="form-check">
+                        <label>
+                            <input type="radio" name="radio" value="0" checked> <span class="label-text">DAILY 24 HOURS</span>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <label>
+                            <input type="radio" name="radio" value="1"> <span class="label-text">WEEKLY 168 HOURS</span>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <label>
+                            <input type="radio" name="radio" value="2"> <span class="label-text">MONTHLY 730 HOURS</span>
+                        </label>
+                    </div>
+                    <p>Please enter current stayke</p>
 
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <input type="text" id="amount" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="amount">Please enter amount of tokens</label>
+
+                    <i class="fa fa-user prefix grey-text"></i>
+                    <input type="text" id="days" class="form-control validate">
+                    <label data-error="wrong" data-success="right" for="days">Please enter number of days</label>
+                    <br><br>
+                    <p align="center">Result: <strong id="result">0</strong></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="calculator()" type="button" class="btn-sm btn-primary">Calculate</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- ****************************************************************************************************************** -->
 
 <div class="container">
@@ -539,7 +646,7 @@
                                         </a>
                                     </li>
                                     <li class="list-group-item" style="background: #343a40;">
-                                        <a onclick="calculator()" href="">
+                                        <a data-toggle="modal" data-target="#calculator" href="">
                                             <div class="depositButton">
                                                 <div class="depositButtonText">
                                                     <p>CALCULATOR</p>
