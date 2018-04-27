@@ -119,7 +119,7 @@ contract ContractStakeToken is Ownable {
     function ContractStakeToken(address _owner) public {
         require(_owner != address(0));
         owner = _owner;
-        owner = msg.sender; // for test's
+        //owner = msg.sender; // for test's
     }
 
     modifier onlyOwnerOrUser() {

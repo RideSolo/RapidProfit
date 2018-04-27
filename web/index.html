@@ -336,12 +336,14 @@
             <input id="dailyAllowance" name="dailyAllowance" value="" type="hidden">
 
             <div class="modal-body">
-                <p>You are available for <strong id="balanceDailyDeposit">0</strong> token</p>
+                <p>You are the owner of <strong id="balanceDailyAll">0</strong> tokens</p>
+                <p>You are available <strong id="balanceDailyDeposit">0</strong> tokens for deposit</p>
+
                 <p style="font-size: 10px;">This does not mean that you have them. It's just your permission to operate with deposition.
                     In the field below you can add the amount of tokens for performing deposit operations.</p>
                 <p style="font-size: 12px;">Attention: it is necessary to wait for the recording of this operation in the Blockchain.
                     Do not try to immediately put the tokens on the deposit!
-                    Close the window and wait until you have the required number of tokens to deposit. You will see this when they appear on the top line of this form.</p>
+                    Close the window and wait until you have the required number of tokens to deposit. You will see this when they appear in the lowest field of this form.</p>
                 <p></p>
                 <div class="md-form mb-5">
                     <i class="fa fa-user prefix grey-text"></i>
@@ -378,14 +380,14 @@
             <input id="weeklyAllowance" name="weeklyAllowance" value="" type="hidden">
 
             <div class="modal-body">
-                <p>You are available for <strong id="balanceWeeklyDeposit">0</strong> token</p>
+                <p>You are the owner of <strong id="balanceWeeklyAll">0</strong> tokens</p>
+                <p>You are available <strong id="balanceWeeklyDeposit">0</strong> tokens for deposit</p>
 
-                <p>You are available for <strong id="balanceWeeklyDeposit">0</strong> token</p>
                 <p style="font-size: 10px;">This does not mean that you have them. It's just your permission to operate with deposition.
                     In the field below you can add the amount of tokens for performing deposit operations.</p>
                 <p style="font-size: 12px;">Attention: it is necessary to wait for the recording of this operation in the Blockchain.
                     Do not try to immediately put the tokens on the deposit!
-                    Close the window and wait until you have the required number of tokens to deposit. You will see this when they appear on the top line of this form.</p>
+                    Close the window and wait until you have the required number of tokens to deposit. You will see this when they appear in the lowest field of this form.</p>
                 <p></p>
                 <div class="md-form mb-5">
                     <i class="fa fa-user prefix grey-text"></i>
@@ -423,14 +425,14 @@
             <input id="monthlyAllowance" name="monthlyAllowance" value="" type="hidden">
 
             <div class="modal-body">
-                <p>You are available for <strong id="balanceMonthlyDeposit">0</strong> token</p>
+                <p>You are the owner of <strong id="balanceMonthlyAll">0</strong> tokens</p>
+                <p>You are available <strong id="balanceMonthlyDeposit">0</strong> tokens for deposit</p>
 
-                <p>You are available for <strong id="balanceMonthlyDeposit">0</strong> token</p>
                 <p style="font-size: 10px;">This does not mean that you have them. It's just your permission to operate with deposition.
                     In the field below you can add the amount of tokens for performing deposit operations.</p>
                 <p style="font-size: 12px;">Attention: it is necessary to wait for the recording of this operation in the Blockchain.
                     Do not try to immediately put the tokens on the deposit!
-                    Close the window and wait until you have the required number of tokens to deposit. You will see this when they appear on the top line of this form.</p>
+                    Close the window and wait until you have the required number of tokens to deposit. You will see this when they appear in the lowest field of this form.</p>
                 <p></p>
                 <div class="md-form mb-5">
                     <i class="fa fa-user prefix grey-text"></i>
@@ -527,7 +529,7 @@
             <p></p>
             <div class="row, rates">
                 <div class="col-md-12 col-sm-12 col-lg-12">
-                    <p align="center">CURRENT RATES TOKEN: DAYLY (<strong id="ratesDayly">0</strong>%),
+                    <p align="center">CURRENT RATES TOKEN: DAILY (<strong id="ratesDayly">0</strong>%),
                         WEEKLY (<strong id="ratesWeekly">0</strong>%), MONTHLY (<strong id="ratesMonthly">0</strong>%)</p>
                 </div>
             </div>
@@ -552,7 +554,7 @@
             <p></p>
             <p></p>
             <p></p>
-            <div align="center" class="row" style="color: #ffffff">
+            <div id="adminPanel" align="center" class="row" style="color: #ffffff">
                 <div class="col-2"></div>
                 <div class="col-8">
                     <div class="parent">
@@ -564,7 +566,7 @@
                                 <p>It was deposited: <strong id="totalDepositedStake" style="color: #ead238">0</strong></p>
                                 <p>It was withdrawed: <strong id="totalWithdraweddStake" style="color: #ead238">0</strong></p></p>
                                 <p>CHANGE RATES:</p>
-                                <p><a data-toggle="modal" data-target="#changeRateDay" href="#">DAYLY</a>&nbsp;&nbsp;&nbsp;
+                                <p><a data-toggle="modal" data-target="#changeRateDay" href="#">DAILY</a>&nbsp;&nbsp;&nbsp;
                                     <a data-toggle="modal" data-target="#changeRateWeek" href="#">WEEKLY</a>&nbsp;&nbsp;&nbsp;
                                     <a data-toggle="modal" data-target="#changeRateMonth" href="#">MONTHLY</a></p>
                                 <p><a data-toggle="modal" data-target="#ownerDepositStyke" href="#">Deposit STAKE</a>&nbsp;&nbsp;&nbsp;
@@ -593,7 +595,7 @@
                                         <a data-toggle="modal" data-target="#depositDay" href="#">
                                             <div class="depositButton">
                                                 <div class="depositButtonText">
-                                                    <p>(DAYLY 24 HOURS)</p>
+                                                    <p>(DAILY 24 HOURS)</p>
                                                     <p>CURRENT RATE: <strong id="ratesDailyButton">0</strong>%</p>
                                                 </div>
                                                 <div class="depositButtonImage">
