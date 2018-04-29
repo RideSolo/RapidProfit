@@ -8,18 +8,19 @@ module.exports = (deployer) => {
 
 };
 
-// ContractStakeToken
-//  https://ropsten.etherscan.io/address/0x30847ced91523a7dfc54a91800e1a0761b4a3769
-
-// !!! Rapid Profit
-// https://ropsten.etherscan.io/address/0x9ff21f276b1659dffc439baf75a52920503d0a1#code
-
-// await contractRP.setContractStakeToken(contractToken.address);
-// await contractRP.setContractErc20Token(contractErc20.address);
-// await contractToken.setContractUser(contractRP.address, true);
-
-
-// 0xC6209690b79DDB25d12EE7eD659B705eB6607879
-// 0xA06A5f58D9cD4292Bcba99996aCD3f56d9C0BB66
-
-//https://etherscan.io/address/0xbec8f6d667594fb181c9d68e5c80c910888be93d#code
+/**
+ * The order of installation of smart contracts:
+ * 1. We deploy the contract ERC20Token and remember the address of the deployed contract.
+ * 2. We deploy the contract StakeToken and remember the address of the deployed contract.
+ * 3. Deploy a RapidProfit contract.
+ * 4. In the RapidProfit contract, we call the function setContractStakeToken (). Set the address of the StakeToken contract.
+ * 5. In the RapidProfit contract, we call the function setContractErc20Token (). Set the address of the contract ERC20Token.
+ * 6. In the StakeToken contract, we call the function setContractUser (). Set the address of the RapidProfit contract.
+ * 7. We copy the contents of the directory https://github.com/vpomo/RapidProfit/tree/master/web to the hosting
+ * 8. In the metaScript.js file, configure the variables:
+ *  addressContractRapidProfit, abiContractRapidProfit,
+ *  addressContractStakeToken, abiContractStakeToken,
+ *  addressContractTokenErc20, abiContractTokenErc20
+ * In the decimalToken variable, set the number of decimal places.
+ * In the variable maxRecordAllPlans we set the number of the last records at the output of Dashboard -> AllPlans
+ */

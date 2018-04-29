@@ -35,6 +35,7 @@ window.addEventListener('load', function () {
             $('#divDappInfo').removeClass("alert-danger");
             $('#divDappInfo').addClass("alert-success");
             $('#dappInfo').html("You are connected to the Blockchain of the Ethereum");
+            $('#divDappInfo').hide();
         } else {
             $('#divDappInfo').removeClass("alert-success");
             $('#divDappInfo').addClass("alert-danger");
@@ -158,14 +159,19 @@ function makeTableAllPlans() {
 
 function drawTableMyPlans(arrayStakesMyPlan) {
     var stakeType = ["DAYLY", "WEEKLY", "MONTHLY"];
-    var status = ["ACTIVE", "COMPLETED", "CANCEL"];
+    var status = ["ACTIVE", "COMPLETED", "CANCELLED"];
     var strHtml = "";
     if(arrayStakesMyPlan != ""){
         var parseArrayStakes = JSON.parse(arrayStakesMyPlan);
         for(var j = 0; j < parseArrayStakes.length; j++){
             strHtml = strHtml + '<tr>' + '<td>'+ parseArrayStakes[j].amount + '</td>' + '<td>'+ stakeType[parseArrayStakes[j].stakeType] +
-                '</td>' + '<td>'+ timeConverter(parseArrayStakes[j].time) + '</td>' + '<td>'+ status[parseArrayStakes[j].status] + '</td>' +
-                '<td><button onclick="cancel('+ parseArrayStakes[j].index +')" type="button" class="btn btn-outline-primary btn-sm">Cancel</button></td>' + '</tr>';
+                '</td>' + '<td>'+ timeConverter(parseArrayStakes[j].time) + '</td>' + '<td>'+ status[parseArrayStakes[j].status] + '</td>';
+            if (parseArrayStakes[j].status != 2) {
+                strHtml = strHtml + '<td><button onclick="cancel('+ parseArrayStakes[j].index +')" type="button" class="btn btn-outline-primary btn-sm">Cancel</button></td>' + '</tr>';
+            } else {
+                strHtml = strHtml + '<td></td>' + '</tr>';
+            }
+
         }
         $('#myPlansBody').html(strHtml);
     }
@@ -173,7 +179,7 @@ function drawTableMyPlans(arrayStakesMyPlan) {
 
 function drawTableAllPlans(arrayStakesAllPlan) {
     var stakeType = ["DAYLY", "WEEKLY", "MONTHLY"];
-    var status = ["ACTIVE", "COMPLETED", "CANCEL"];
+    var status = ["ACTIVE", "COMPLETED", "CANCELLED"];
     var strHtml = "";
     if(arrayStakesAllPlan != ""){
         var parseArrayStakes = JSON.parse(arrayStakesAllPlan);
