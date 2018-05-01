@@ -6,6 +6,9 @@ var contractStakeToken;
 var addressContractStakeToken = "0x30847ced91523a7dfc54a91800e1a0761b4a3769";
 var abiContractStakeToken = [{"constant":true,"inputs":[],"name":"totalWithdrawTokenAll","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_numberRate","type":"uint8"},{"name":"_percent","type":"uint256"}],"name":"changeRates","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"getTotalTokenDepositByAddress","outputs":[{"name":"_amountToken","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_index","type":"uint256"},{"name":"_address","type":"address"}],"name":"cancel","outputs":[{"name":"_result","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_index","type":"uint256"}],"name":"getTokenStakeByIndex","outputs":[{"name":"_owner","type":"address"},{"name":"_amount","type":"uint256"},{"name":"_stakeType","type":"uint8"},{"name":"_time","type":"uint256"},{"name":"_status","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_investor","type":"address"},{"name":"_stakeType","type":"uint8"},{"name":"_time","type":"uint256"},{"name":"_value","type":"uint256"}],"name":"depositToken","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_amount","type":"uint256"}],"name":"withdrawOwner","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"},{"name":"_now","type":"uint256"}],"name":"validWithdrawToken","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"}],"name":"getCountTransferInsToken","outputs":[{"name":"_count","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_address","type":"address"}],"name":"withdrawToken","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_address","type":"address"},{"name":"_index","type":"uint256"}],"name":"getTokenTransferInsByAddress","outputs":[{"name":"_indexStake","type":"uint256"},{"name":"_isRipe","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_user","type":"address"},{"name":"_isUser","type":"bool"}],"name":"setContractUser","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getCountStakesToken","outputs":[{"name":"_count","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"contractUsers","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOfToken","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_currentStake","type":"uint8"},{"name":"_amount","type":"uint256"},{"name":"_amountHours","type":"uint256"}],"name":"calculator","outputs":[{"name":"stakeAmount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalDepositTokenAll","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"rates","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"getTotalTokenWithdrawByAddress","outputs":[{"name":"_amountToken","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"removeContract","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_owner","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"receiver","type":"address"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"Withdraw","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"previousOwner","type":"address"},{"indexed":true,"name":"newOwner","type":"address"}],"name":"OwnerChanged","type":"event"}];
 
+var stakeType = ["DAILY", "WEEKLY", "MONTHLY"];
+var status = ["ACTIVE", "COMPLETED", "CANCELLED"];
+
 
 /* old contract
 var contractTokenErc20;
@@ -52,7 +55,7 @@ window.addEventListener('load', function () {
 function startApp() {
     initContract();
     var myWalletAddress = web3.eth.accounts[0];
-    var rateDayly = 0;
+    var rateDaily = 0;
     var rateWeekly = 0;
     var rateMonthly = 0;
 
@@ -65,9 +68,9 @@ function startApp() {
         $('#totalEth').html(walletEth.toFixed(4));
     });
     contractStakeToken.rates(0, function (error, data) {
-        rateDayly = data - 100;
-        $('#ratesDayly').html(rateDayly.toFixed(0));
-        $('#ratesDailyButton').html(rateDayly.toFixed(0));
+        rateDaily = data - 100;
+        $('#ratesDaily').html(rateDaily.toFixed(0));
+        $('#ratesDailyButton').html(rateDaily.toFixed(0));
     });
     contractStakeToken.rates(1, function (error, data) {
         rateWeekly = data - 100;
@@ -80,12 +83,12 @@ function startApp() {
         $('#ratesMonthlyButton').html(rateMonthly.toFixed(0));
     });
     contractStakeToken.totalDepositTokenAll(function (error, data) {
-        rateDayly = Number(data) / decimalToken;
-        $('#totalDepositedStake').html(rateDayly.toFixed(4));
+        rateDaily = Number(data) / decimalToken;
+        $('#totalDepositedStake').html(rateDaily.toFixed(4));
     });
     contractStakeToken.totalWithdrawTokenAll(function (error, data) {
-        rateDayly = Number(data) / decimalToken;
-        $('#totalWithdraweddStake').html(rateDayly.toFixed(4));
+        rateDaily = Number(data) / decimalToken;
+        $('#totalWithdraweddStake').html(rateDaily.toFixed(4));
     });
     getAmountTokensErc20();
     readAllowance();
@@ -158,8 +161,6 @@ function makeTableAllPlans() {
 }
 
 function drawTableMyPlans(arrayStakesMyPlan) {
-    var stakeType = ["DAYLY", "WEEKLY", "MONTHLY"];
-    var status = ["ACTIVE", "COMPLETED", "CANCELLED"];
     var strHtml = "";
     if(arrayStakesMyPlan != ""){
         var parseArrayStakes = JSON.parse(arrayStakesMyPlan);
@@ -178,7 +179,7 @@ function drawTableMyPlans(arrayStakesMyPlan) {
 }
 
 function drawTableAllPlans(arrayStakesAllPlan) {
-    var stakeType = ["DAYLY", "WEEKLY", "MONTHLY"];
+    var stakeType = ["DAILY", "WEEKLY", "MONTHLY"];
     var status = ["ACTIVE", "COMPLETED", "CANCELLED"];
     var strHtml = "";
     if(arrayStakesAllPlan != ""){
