@@ -272,23 +272,23 @@ function depositTokenForUser(stake) {
     var nonDeposit = false;
     var amount = 0;
     if (stake == 0) {
-        amountTokens = $('#depositDaily').val();
-        if ($('#dailyAllowance').val() < amountTokens) {
+        amountTokens = Number($('#depositDaily').val());
+        if (Number($('#dailyAllowance').val()) < amountTokens) {
             nonDeposit = true;
             $('#divErrorInfoDaily').show();
         }
     }
     if (stake == 1) {
-        amountTokens = $('#depositWeekly').val();
-        if ($('#weeklyAllowance').val() < amountTokens) {
+        amountTokens = Number($('#depositWeekly').val());
+        if (Number($('#weeklyAllowance').val()) < amountTokens) {
             console.log("$('#weeklyAllowance').val()" + $('#weeklyAllowance').val());
             nonDeposit = true;
             $('#divErrorInfoWeekly').show();
         }
     }
     if (stake == 2) {
-        amountTokens = $('#depositMonthly').val();
-        if ($('#monthlyAllowance').val() < amountTokens) {
+        amountTokens = Number($('#depositMonthly').val());
+        if (Number($('#monthlyAllowance').val()) < amountTokens) {
             nonDeposit = true;
             $('#divErrorInfoMonthly').show();
         }
